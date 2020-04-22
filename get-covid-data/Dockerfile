@@ -29,9 +29,8 @@ RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc && \
     chmod +x mc && \
     mv mc /usr/bin/
 
-COPY data    /data
+# COPY data    /data
 COPY src     /src
 COPY main.sh /main.sh
 
 ENTRYPOINT ["/main.sh"]
-
