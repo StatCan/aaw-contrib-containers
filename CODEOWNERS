@@ -1,0 +1,16 @@
+# DAaaS are the default owners
+*                     @statcan/daaas
+
+# Codeowners is restricted
+CODEOWNERS            @statcan/daaas-admins
+
+# Workflows are restricted
+/.github/workflows/   @statcan/daaas-workflows
+
+# Project-specific owners
+#
+# User:
+## /example/ @githubuser
+# Team:
+## /example/ @statcan/teamname
+# Multiple can be set on the same line
