@@ -13,6 +13,7 @@ if ! git clone --depth=1 \
     echo "Couldn't git clone. Exiting. Network Error?"
     exit 1
 fi
+mv /tmp/covid19/005-test-kubeflow/pipeline-test/image-loadData/src /src
 
 
 while test -n "$1"; do
