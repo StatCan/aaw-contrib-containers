@@ -34,12 +34,19 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
 
+    - name: Free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
+
     # Container build and push to a Azure Container registry (ACR)
     - run: |
         docker build -f get-covid-data/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-get-covid-data:${{ github.sha }} get-covid-data
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-get-covid-data:${{ github.sha }}
-        docker build -f kenchu-wifr-aggregate/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-kenchu-wifr-aggregate:${{ github.sha }} kenchu-wifr-aggregate
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-kenchu-wifr-aggregate:${{ github.sha }}
+        docker system prune -f -a
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
@@ -47,6 +54,12 @@ jobs:
         image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-get-covid-data:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
+
+    # Container build and push to a Azure Container registry (ACR)
+    - run: |
+        docker build -f kenchu-wifr-aggregate/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-kenchu-wifr-aggregate:${{ github.sha }} kenchu-wifr-aggregate
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-kenchu-wifr-aggregate:${{ github.sha }}
+        docker system prune -f -a
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
