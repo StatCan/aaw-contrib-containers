@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y software-properties-common --no-install
             && apt-get clean \ 
             && rm -rf /var/lib/apt/lists/*
 
-RUN add-apt-repository ppa:ubuntugis/ppa && apt-get update
+# RUN add-apt-repository ppa:ubuntugis/ppa && apt-get update
 
 # gdal-bin and libgdal-dev is not installed because now gdal is installed with conda and hence these packages might not be required.
 # RUN apt-get update && apt-get install -y python3-rtree gdal-bin libgdal-dev glances \
