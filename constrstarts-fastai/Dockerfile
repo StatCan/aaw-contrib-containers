@@ -1,8 +1,8 @@
 # https://github.com/Paperspace/fastai-docker/tree/master/fastai-v3
 # GPU, ubuntu16.04
 FROM paperspace/fastai:1.0-CUDA9.2-base-3.0-v1.0.6
-COPY fix-permissions /usr/local/bin/fix-permissions
-RUN chmod a+rx /usr/local/bin/fix-permissions
+# COPY fix-permissions /usr/local/bin/fix-permissions
+# RUN chmod a+rx /usr/local/bin/fix-permissions
 RUN apt-get update && apt-get install -y software-properties-common --no-install-recommends \
             && apt-get clean \ 
             && rm -rf /var/lib/apt/lists/*
