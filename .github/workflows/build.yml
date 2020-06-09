@@ -45,7 +45,7 @@ jobs:
 
     # Container build and push to a Azure Container registry (ACR)
     - run: |
-        docker system prune -f
+        docker system prune -f -a
         docker build -f kenchu-wifr-aggregate/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-kenchu-wifr-aggregate:${{ github.sha }} kenchu-wifr-aggregate
 
     # Scan image for vulnerabilities
@@ -57,7 +57,7 @@ jobs:
 
     # Container build and push to a Azure Container registry (ACR)
     - run: |
-        docker system prune
+        docker system prune -f -a
         docker build -f constrstarts-fastai/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-fastai:${{ github.sha }} constrstarts-fastai
 
     # Scan image for vulnerabilities
