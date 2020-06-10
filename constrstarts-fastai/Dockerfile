@@ -13,6 +13,10 @@ RUN conda update -n base -c defaults conda && \
     conda clean --all -f -y'
 RUN mkdir -p /home/jovyan && chmod -R a+w /home/jovyan
 WORKDIR /home/jovyan
+
+RUN apt-get remove -y libxml2
+RUN rm -rf /notebooks
+
 # Tanzania repo 
 RUN git clone --depth=1 https://github.com/daveluo/zanzibar-aerial-mapping.git
 CMD ["sh","-c", "/opt/conda/envs/fastai/bin/jupyter notebook --notebook-dir=/home/jovyan --ip=0.0.0.0 --no-browser --allow-root --port=8888 --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_origin='*' --NotebookApp.base_url=${NB_PREFIX}"]
