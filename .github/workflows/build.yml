@@ -58,6 +58,11 @@ jobs:
     - run: |
         docker system prune -f -a --volumes
         docker build -f constrstarts-geo/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-geo:${{ github.sha }} constrstarts-geo
+      with:
+        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
