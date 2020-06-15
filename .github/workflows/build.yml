@@ -53,3 +53,15 @@ jobs:
         image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-kenchu-wifr-aggregate:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
+
+    # Container build and push to a Azure Container registry (ACR)
+    - run: |
+        docker system prune -f -a --volumes
+        docker build -f constrstarts-geo/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-geo:${{ github.sha }} constrstarts-geo
+
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-geo:${{ github.sha }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
