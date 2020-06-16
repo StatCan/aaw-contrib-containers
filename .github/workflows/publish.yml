@@ -82,3 +82,15 @@ jobs:
     #    severity-threshold: CRITICAL
     #    run-quality-checks: false
 
+    # Container build and push to a Azure Container registry (ACR)
+    - run: |
+        docker build -f constrstarts-fastai/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-fastai:${{ github.sha }} constrstarts-fastai
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-fastai:${{ github.sha }}
+        docker system prune -f -a
+
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-fastai:${{ github.sha }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
