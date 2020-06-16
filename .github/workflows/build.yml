@@ -41,6 +41,7 @@ jobs:
 
     # Container build and push to a Azure Container registry (ACR)
     - run: |
+        docker system prune -f -a
         docker build -f get-covid-data/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-get-covid-data:${{ github.sha }} get-covid-data
 
     # Scan image for vulnerabilities
@@ -52,6 +53,7 @@ jobs:
 
     # Container build and push to a Azure Container registry (ACR)
     - run: |
+        docker system prune -f -a
         docker build -f kenchu-wifr-aggregate/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-kenchu-wifr-aggregate:${{ github.sha }} kenchu-wifr-aggregate
 
     # Scan image for vulnerabilities
@@ -63,8 +65,8 @@ jobs:
 
     # Container build and push to a Azure Container registry (ACR)
     - run: |
-        docker build -f constrstarts-geo/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-geo:${{ github.sha }} constrstarts-geo
         docker system prune -f -a
+        docker build -f constrstarts-geo/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-geo:${{ github.sha }} constrstarts-geo
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
