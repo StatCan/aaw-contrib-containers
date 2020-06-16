@@ -63,9 +63,8 @@ jobs:
 
     # Container build and push to a Azure Container registry (ACR)
     - run: |
-        docker system prune -f -a --volumes
         docker build -f constrstarts-geo/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-geo:${{ github.sha }} constrstarts-geo
-
+        docker system prune -f -a
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
