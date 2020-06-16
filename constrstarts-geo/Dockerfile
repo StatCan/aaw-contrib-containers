@@ -11,7 +11,7 @@ USER jovyan
 
 COPY requirements.txt /home/jovyan
 COPY install_requirements.sh /home/jovyan
-RUN /bin/bash -c "./install_requirements.sh"
+#RUN /bin/bash -c "./install_requirements.sh"
 
 
 CMD ["/init.sh"]
