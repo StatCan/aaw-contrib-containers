@@ -2,8 +2,10 @@ descartes==1.1.0
 rio-tiler==1.4.0
 gpustat==0.6.0
 mlflow==1.6.0
-fastai==1.0.58
+fastai==1.0.42
 pigeon-jupyter==0.1.0
 opencv-python==4.2.0.34
 distro==1.4.0
 scikit-image==0.16.2
+gpustat==0.6.0
+jupyterlab==2.1.5
