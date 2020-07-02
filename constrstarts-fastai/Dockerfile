@@ -12,9 +12,9 @@ WORKDIR /home/jovyan
 # COPY requirements.txt install_requirements.sh /home/jovyan/
 COPY requirements.txt install_requirements.sh /tmp/
 
-RUN bash -c '. activate fastai && pip install jupyterlab==2.1.5'
+# RUN bash -c '. activate fastai && pip install jupyterlab==2.1.5'
 
 # ./install_requirements.sh ;
 
 # "shell" form
-CMD /opt/conda/envs/fastai/bin/jupyter notebook --notebook-dir=/home/jovyan --ip=0.0.0.0 --no-browser --allow-root --port=8888 --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_origin='*' --NotebookApp.base_url=${NB_PREFIX}
+CMD /tmp/install_requirements.sh ; /opt/conda/envs/fastai/bin/jupyter notebook --notebook-dir=/home/jovyan --ip=0.0.0.0 --no-browser --allow-root --port=8888 --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_origin='*' --NotebookApp.base_url=${NB_PREFIX}
