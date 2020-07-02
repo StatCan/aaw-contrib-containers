@@ -7,4 +7,3 @@ pigeon-jupyter==0.1.0
 opencv-python==4.2.0.34
 distro==1.4.0
 scikit-image==0.16.2
-gpustat==0.6.0
