@@ -16,5 +16,10 @@ COPY requirements.txt install_requirements.sh /tmp/
 
 # ./install_requirements.sh ;
 
+# Removal due to security risk.
+apt-get remove -y libxml2
+rm -rf /notebooks
+
+
 # "shell" form
 CMD /tmp/install_requirements.sh ; /opt/conda/envs/fastai/bin/jupyter notebook --notebook-dir=/home/jovyan --ip=0.0.0.0 --no-browser --allow-root --port=8888 --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_origin='*' --NotebookApp.base_url=${NB_PREFIX}
