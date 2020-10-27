@@ -23,6 +23,4 @@ RUN addgroup appgroup && \
 	adduser -S -g appgroup appuser
 USER appuser
 
-COPY test.json test.json
-
 CMD python3 ${BATCH_MACHINE_PATH}/test.py
