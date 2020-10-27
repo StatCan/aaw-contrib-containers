@@ -44,7 +44,7 @@ jobs:
 
     # Container build and push to a Azure Container registry (ACR)
     - run: |
-        docker build -f ./openaddresses-batch-machine/openaddresses-batch-machine/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-openaddresses-batch-machine:${{ github.sha }} ./openaddresses-batch-machine/openaddresses-batch-machine
+        docker build -f ./openaddresses-batch-machine/container/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-openaddresses-batch-machine:${{ github.sha }} ./openaddresses-batch-machine/container
         docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-openaddresses-batch-machine:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-openaddresses-batch-machine:latest
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-openaddresses-batch-machine:${{ github.sha }} 
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-openaddresses-batch-machine:latest
