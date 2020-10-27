@@ -6,7 +6,7 @@ outputs:
 - {name: data, description: 'All data downloaded from OpenAddresses call'}
 implementation:
   container:
-    image: k8scc01covidacr.azurecr.io/daaas-openaddresses-batch-machine
+    image: k8scc01covidacr.azurecr.io/daaas-openaddresses-batch-machine:latest
     command:
     - sh
     - -ex
