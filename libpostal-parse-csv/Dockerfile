@@ -1,8 +1,9 @@
 FROM wojtylacz/pypostal-docker
 
 RUN pip3 install pandas
-COPY input.csv
-COPY parse_csv.py scripts/parse_csv.py
+WORKDIR /home/parse
+COPY input.csv /home/parse/input.csv
+COPY parse_csv.py /home/parse/scripts/parse_csv.py
 ENTRYPOINT [ "python3", \
             "/scripts/parse_csv.py", \
             "input.csv", \
