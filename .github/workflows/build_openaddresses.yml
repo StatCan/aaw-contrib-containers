@@ -49,3 +49,5 @@ jobs:
         image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-openaddresses-batch-machine:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
+
+# Insignificant change to tigger a build.  Delete this line if found
