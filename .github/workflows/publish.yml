@@ -22,7 +22,16 @@ env:
   CLUSTER_NAME: k8s-cancentral-02-covid-aks
   CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
 jobs:
+  listimages:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - uses: actions/checkout@master
+    - id: set-matrix
+      run: echo "::set-output name=matrix::{\"image\":[$(ls -d */ | sed 's~\(.*\)/$~\"\1\"~g' | paste -sd ',')]}"
   build:
+    needs: listimages
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -34,63 +43,24 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
 
-    - name: Free disk space
-      run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        docker rmi $(docker image ls -aq)
-        df -h
+    - uses: actions/checkout@master
 
     # Container build and push to a Azure Container registry (ACR)
     - run: |
-        docker build -f get-covid-data/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-get-covid-data:${{ github.sha }} get-covid-data
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-get-covid-data:${{ github.sha }}
-        docker system prune -f -a
+        docker build -f ${{ matrix.image }}/Dockerfile -t localhost:5000/${{ matrix.image }}:${{ github.sha }} ${{ matrix.image }}
+        docker push localhost:5000/${{ matrix.image }}:${{ github.sha }}
+        docker rmi localhost:5000/${{ matrix.image }}:${{ github.sha }}
+        docker image prune
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-get-covid-data:${{ github.sha }}
+        image-name: localhost:5000/${{ matrix.image }}:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
     # Container build and push to a Azure Container registry (ACR)
     - run: |
-        docker build -f kenchu-wifr-aggregate/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-kenchu-wifr-aggregate:${{ github.sha }} kenchu-wifr-aggregate
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-kenchu-wifr-aggregate:${{ github.sha }}
-        docker system prune -f -a
-
-    # Scan image for vulnerabilities
-    - uses: Azure/container-scan@v0
-      with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-kenchu-wifr-aggregate:${{ github.sha }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
-
-
-    # Container build and push to a Azure Container registry (ACR)
-    - run: |
-        docker build -f constrstarts-geo/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-geo:${{ github.sha }} constrstarts-geo
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-geo:${{ github.sha }}
-        docker system prune -f -a
-
-    ## Scan image for vulnerabilities
-    #- uses: Azure/container-scan@v0
-    #  with:
-    #    image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-geo:${{ github.sha }}
-    #    severity-threshold: CRITICAL
-    #    run-quality-checks: false
-
-    # Container build and push to a Azure Container registry (ACR)
-    - run: |
-        docker build -f constrstarts-fastai/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-fastai:${{ github.sha }} constrstarts-fastai
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-fastai:${{ github.sha }}
-        docker system prune -f -a
-
-    # Scan image for vulnerabilities
-    - uses: Azure/container-scan@v0
-      with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-fastai:${{ github.sha }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
+        docker pull localhost:5000/${{ matrix.image }}:${{ github.sha }}
+        docker tag localhost:5000/${{ matrix.image }}:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.sha }}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.sha }}
