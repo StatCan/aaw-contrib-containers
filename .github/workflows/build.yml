@@ -20,6 +20,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
+    - uses: actions/checkout@master
     - id: set-matrix
       run: echo "::set-output name=matrix::{\"image\":[$(ls -d */ | sed 's~\(.*\)/$~\"\1\"~g' | paste -sd ',')]}"
   build:
