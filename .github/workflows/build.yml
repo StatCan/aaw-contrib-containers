@@ -21,7 +21,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
     - id: set-matrix
-      run: echo "::set-output name=matrix::{\"image\":[$(ls -d */ | sed 's~\(.*\)/$~"\1"~g' | paste -sd ',')]}"
+      run: echo "::set-output name=matrix::{\"image\":[$(ls -d */ | sed 's~\(.*\)/$~\"\1\"~g' | paste -sd ',')]}"
   build:
     strategy:
       fail-fast: false
