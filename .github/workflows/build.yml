@@ -23,6 +23,7 @@ jobs:
     - id: set-matrix
       run: echo "::set-output name=matrix::{\"image\":[$(ls -d */ | sed 's~\(.*\)/$~\"\1\"~g' | paste -sd ',')]}"
   build:
+    needs: listimages
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.listimages.outputs.matrix)}}
