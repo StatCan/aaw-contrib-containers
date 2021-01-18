@@ -14,75 +14,39 @@ name: build
 on: [pull_request]
 
 # Environment variables available to all jobs and steps in this workflow
-env:
-  REGISTRY_NAME: k8scc01covidacr
-  CLUSTER_NAME: k8s-cancentral-02-covid-aks
-  CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
 jobs:
-  build:
+  listimages:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - uses: actions/checkout@master
+    - id: set-matrix
+      run: echo "::set-output name=matrix::{\"image\":[$(ls -d */ | sed 's~\(.*\)/$~\"\1\"~g' | paste -sd ',')]}"
+  build:
+    needs: listimages
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.listimages.outputs.matrix)}}
+    runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
     steps:
     - uses: actions/checkout@master
 
-    # Connect to Azure Container registry (ACR)
-    - uses: azure/docker-login@v1
-      with:
-        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
-
-    - name: Free disk space
-      run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        docker rmi $(docker image ls -aq)
-        df -h
-
     # Container build and push to a Azure Container registry (ACR)
     - run: |
-        docker system prune -f -a
-        docker build -f get-covid-data/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-get-covid-data:${{ github.sha }} get-covid-data
+        docker build -f ${{ matrix.image }}/Dockerfile -t localhost:5000/${{ matrix.image }}:${{ github.sha }} ${{ matrix.image }}
+        docker push localhost:5000/${{ matrix.image }}:${{ github.sha }}
+        docker rmi localhost:5000/${{ matrix.image }}:${{ github.sha }}
+        docker image prune
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-get-covid-data:${{ github.sha }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
-
-    # Container build and push to a Azure Container registry (ACR)
-    - run: |
-        docker system prune -f -a
-        docker build -f kenchu-wifr-aggregate/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-kenchu-wifr-aggregate:${{ github.sha }} kenchu-wifr-aggregate
-
-    # Scan image for vulnerabilities
-    - uses: Azure/container-scan@v0
-      with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-kenchu-wifr-aggregate:${{ github.sha }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
-
-    # Container build and push to a Azure Container registry (ACR)
-    - run: |
-        docker system prune -f -a
-        docker build -f constrstarts-geo/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-geo:${{ github.sha }} constrstarts-geo
-
-    # Scan image for vulnerabilities
-    #- uses: Azure/container-scan@v0
-    #  with:
-    #    image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-geo:${{ github.sha }}
-    #    severity-threshold: CRITICAL
-    #    run-quality-checks: false
-
-    # Container build and push to a Azure Container registry (ACR)
-    - run: |
-        docker system prune -f -a --volumes
-        docker build -f constrstarts-fastai/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-fastai:${{ github.sha }} constrstarts-fastai
-
-    # Scan image for vulnerabilities
-    - uses: Azure/container-scan@v0
-      with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/daaas-constrstarts-fastai:${{ github.sha }}
+        image-name: localhost:5000/${{ matrix.image }}:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
