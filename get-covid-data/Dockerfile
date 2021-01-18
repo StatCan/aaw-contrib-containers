@@ -34,4 +34,5 @@ RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc && \
 # COPY src     /src
 COPY main.sh /main.sh
 
+
 ENTRYPOINT ["/main.sh"]
