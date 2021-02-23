@@ -1,6 +1,7 @@
-FROM python:3.8-buster
+FROM python:3.9.2-buster
 
-COPY fibonacci-sum.py fibonacci-sum.py
-RUN chmod a+x fibonacci-sum.py
+COPY fibonacci-sum.py /home/fibonacci-sum.py
+WORKDIR /home/
+RUN chmod a+x /home/fibonacci-sum.py
 
-ENTRYPOINT ["python", "fibonacci-sum.py"]
+ENTRYPOINT ["python3", "/home/fibonacci-sum.py"]
