@@ -10,12 +10,14 @@ RUN adduser --system --group $USER \
     && chown -R $USER:$USER $APP_HOME
 
 RUN apt-get update -y \
-    && apt-get install -y python3 python3-pip \
+    && apt-get install -y python3 python3-pip git wget curl moreutils \
     && rm -rf /var/lib/apt/lists/*
 
+RUN ln -s /usr/bin/python3 /usr/bin/python \
+    && ln -s /usr/bin/pip3 /usr/bin/pip
+
 COPY src_requirements.txt /tmp/requirements.txt
-RUN ln -s /usr/bin/pip3 /usr/bin/pip \
-    && pip install --upgrade pip \
+RUN pip install --upgrade pip \
     && pip install -r /tmp/requirements.txt
 
 USER $USER
