@@ -143,6 +143,11 @@ There are a couple of key reasons to building an image in this way.
 and, if applicable, consider copying your applications/build artifacts to a
 distroless image to improve security.
 
+### Avoid cache-busting your Dockerfiles
+
+- Docker tries to avoid building anything it knows has not changed, but it cannot always detect this properly.  When in situations where Docker always rebuilds layers unnecessarily, consider breaking your build into multiple images.  This way you can put your static content in the first image, then base your final image on that first image (`FROM myfirstimage:v123`).  This way you prevent Docker from trying to decide if your static content needs to be rebuilt (but note, if you do this and your static content does need rebuidling, you need to do that yourself!)
+
+- Sometimes with python packages Docker will misunderstand whether a `requirements.txt` has changed, forcing a full  reinstall of your python packages even when they are cached.  One way around this is to add `RUN pip install mySlowPackages==0.1.2` explicitly near the top of the Dockerfile **in addition to in your requirements.txt file later in the build**.  The benefit of this is that those explicit calls to pip are easier for Docker to cache, so they won't be reinstalled as frequently.  And even though you do `pip install -r requirements.txt` later, pip itself will see that your package is already installed and skip it, meaning you save almost as much time as if Docker got the cache correct.  
 ### Set build-time variables
 
 - Docker provides an `ARG` directive that lets you specify build-time arguments.
