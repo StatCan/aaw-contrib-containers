@@ -57,6 +57,12 @@ end. This allows you to avoid rebuilding expensive unchanging layers every time
 you need to rebuild your image after making a small change (e.g. installing a
 new Python package).
 
+### Handling python packages in Dockerfiles
+
+- In general it is good practice to use a `requirements.txt` file in a project and to pin the versions (`pandas==1.2.3` rather than just `pandas`).  Requirements files are also useful in constructing more succinct Dockerfiles (`RUN pip install -r requirements.txt` is briefer than `RUN pip install package1 package2 ...`)
+
+- But, sometimes `requirements.txt` files can cause issues in Dockerfiles.  For example, if you have 10 packages that never change but one that is updated frequently, you have the same problem as when you put frequently changed items at the top of a Dockerfile.  Sometimes it is appropriate to have `requirements_rarely_changing.txt` and `requirements_frequently_changing.txt` (or, perhaps better titles), this way the frequently changing packages can be installed later in the Dockerfile.  
+
 ### Do setup, execute, and cleanup in a single stanza
 
 - As mentioned above, docker creates image layers based on a single stanza.
