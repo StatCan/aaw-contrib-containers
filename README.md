@@ -188,34 +188,18 @@ using `ARG` and `--build-arg` to declare and override build-time arguments.
   is the [alpine][] image, which is based off of the Alpine distribution of
   Linux.
 
-- This is a very lightweight image that has many use cases, but this is often
-  not a good choice as a base image for data science oriented projects (esp. it
-  is not a great choice for projects with heavy Python dependencies).
+- This is a very lightweight image that has many use cases, but it may not be a good choice as a base image for data science oriented projects. In particular, for projects with heavy Python dependencies, it may be worth considering an alternative base image.
 
 - Why?
 
-  - Reason is that most python packages include prebuilt wheels (wheels are a
-    kind of pre-built distribution for python that allow you to avoid the build
-    stage that is normally required with source distributions).
-  - Since Alpine is very stripped down compared to other Linux distributions, it
-    has a different version of the standard C library that is required by most C
-    programs (including Python).
-  - Because of the above, Alpine doesn't support Python wheels, so when you
-    install Python packages on an Alpine based image, you install the source
-    code, which means that all C code in every Python package you use must be
-    compiled.
-  - This also means you need to figure out every system library dependency
-    yourself.
+  - Reason is that most python packages include prebuilt wheels (wheels are a kind of pre-built distribution for python that allow you to avoid the build stage that is normally required with source distributions).
+  - Since Alpine is very stripped down compared to other Linux distributions, it has a different version of the standard C library that is required by most C programs (including Python). Specifically, the Alpine image uses the [`musl`](https://musl.libc.org/) implementation of the C standard library instead of [`glibc`](https://www.gnu.org/software/libc/) implementation.
+  - Because of the above, Python wheels generally aren't available for `musl`, so when you install Python packages on an Alpine based image, you install the source code, which means that all C code in every Python package you use must be compiled.
+  - This also means you need to figure out every system library dependency yourself.
 
-- **Bottom Line:** If you try to install a bunch of Python packages on an Alpine
-  based image, your build will take longer, be more error prone, and your disk
-  footprint will be higher than if you installed those Python packages on an
-  image based on Debian or another Linux distribution with the full standard C
-  library (`glibc`).
+- **Bottom Line:** If you try to install a bunch of Python packages on an Alpine based image, your build may take longer, be more error prone, and result in a higher disk footprint than if you installed those Python packages on an image based on Debian or another Linux distribution with the full standard C library (`glibc`).
 
-**Recommendation:** If you project has a lot of Python dependencies, don't use
-an Alpine based image. Instead, use a Debian-based image, or an image based on
-another Linux distribution that has the full standard C library.
+**Recommendation:** Depending on your project requirements, if your project contains many Python dependencies, you may want to consider using a Docker image based on Debian or another Linux distribution other than Alpine. Note that this is not an absolute recommendation, as there are other considerations (e.g. security) that can impact the decision of which base image to use. However, you should be aware of the above-mentioned implication of using Alpine images for projects with significant Python dependencies.
 
 **Background reading for those interested:**
 
