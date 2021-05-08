@@ -59,9 +59,9 @@ new Python package).
 
 ### Handling python packages in Dockerfiles
 
-- In general it is good practice to use a `requirements.txt` file in a project and to pin the versions (`pandas==1.2.3` rather than just `pandas`).  Requirements files are also useful in constructing more succinct Dockerfiles (`RUN pip install -r requirements.txt` is briefer than `RUN pip install package1 package2 ...`)
+- In general it is good practice to use a `requirements.txt` file in a project and to pin the versions (`pandas==1.2.3` rather than just `pandas`). Requirements files are also useful in constructing more succinct Dockerfiles (`RUN pip install -r requirements.txt` is briefer than `RUN pip install package1 package2 ...`)
 
-- But, sometimes `requirements.txt` files can cause issues in Dockerfiles.  For example, if you have 10 packages that never change but one that is updated frequently, you have the same problem as when you put frequently changed items at the top of a Dockerfile.  Sometimes it is appropriate to have `requirements_rarely_changing.txt` and `requirements_frequently_changing.txt` (or, perhaps better titles), this way the frequently changing packages can be installed later in the Dockerfile.  
+- But, sometimes `requirements.txt` files can cause issues in Dockerfiles. For example, if you have 10 packages that never change but one that is updated frequently, you have the same problem as when you put frequently changed items at the top of a Dockerfile. Sometimes it is appropriate to have `requirements_rarely_changing.txt` and `requirements_frequently_changing.txt` (or, perhaps better titles), this way the frequently changing packages can be installed later in the Dockerfile.
 
 ### Do setup, execute, and cleanup in a single stanza
 
@@ -145,9 +145,10 @@ distroless image to improve security.
 
 ### Avoid cache-busting your Dockerfiles
 
-- Docker tries to avoid building anything it knows has not changed, but it cannot always detect this properly.  When in situations where Docker always rebuilds layers unnecessarily, consider breaking your build into multiple images.  This way you can put your static content in the first image, then base your final image on that first image (`FROM myfirstimage:v123`).  This way you prevent Docker from trying to decide if your static content needs to be rebuilt (but note, if you do this and your static content does need rebuidling, you need to do that yourself!)
+- Docker tries to avoid building anything it knows has not changed, but it cannot always detect this properly. When in situations where Docker always rebuilds layers unnecessarily, consider breaking your build into multiple images. This way you can put your static content in the first image, then base your final image on that first image (`FROM myfirstimage:v123`). This way you prevent Docker from trying to decide if your static content needs to be rebuilt (but note, if you do this and your static content does need rebuidling, you need to do that yourself!)
 
-- Sometimes with python packages Docker will misunderstand whether a `requirements.txt` has changed, forcing a full  reinstall of your python packages even when they are cached.  One way around this is to add `RUN pip install mySlowPackages==0.1.2` explicitly near the top of the Dockerfile **in addition to in your requirements.txt file later in the build**.  The benefit of this is that those explicit calls to pip are easier for Docker to cache, so they won't be reinstalled as frequently.  And even though you do `pip install -r requirements.txt` later, pip itself will see that your package is already installed and skip it, meaning you save almost as much time as if Docker got the cache correct.  
+- Sometimes with python packages Docker will misunderstand whether a `requirements.txt` has changed, forcing a full reinstall of your python packages even when they are cached. One way around this is to add `RUN pip install mySlowPackages==0.1.2` explicitly near the top of the Dockerfile **in addition to in your requirements.txt file later in the build**. The benefit of this is that those explicit calls to pip are easier for Docker to cache, so they won't be reinstalled as frequently. And even though you do `pip install -r requirements.txt` later, pip itself will see that your package is already installed and skip it, meaning you save almost as much time as if Docker got the cache correct.
+
 ### Set build-time variables
 
 - Docker provides an `ARG` directive that lets you specify build-time arguments.
@@ -206,25 +207,17 @@ using `ARG` and `--build-arg` to declare and override build-time arguments.
 - Article: [Python Wheels][]
 - Article: [Alpine Docker with Python vs. Debian][]
 
-[python on docker handbook]:
-  https://pythonspeed.com/products/productionhandbook/
-[container security fundamentals book]:
-  https://www.amazon.ca/Container-Security-Fundamental-Containerized-Applications/dp/1492056707
+[python on docker handbook]: https://pythonspeed.com/products/productionhandbook/
+[container security fundamentals book]: https://www.amazon.ca/Container-Security-Fundamental-Containerized-Applications/dp/1492056707
 [docker-official-images]: https://docs.docker.com/docker-hub/official_images/
-[docker-official-bases]:
-  https://hub.docker.com/search?type=image&category=base&image_filter=official
-[nvidia-base-image]:
-  https://gitlab.com/nvidia/container-images/cuda/-/blob/master/dist/11.1.1/ubuntu20.04-x86_64/base/Dockerfile
+[docker-official-bases]: https://hub.docker.com/search?type=image&category=base&image_filter=official
+[nvidia-base-image]: https://gitlab.com/nvidia/container-images/cuda/-/blob/master/dist/11.1.1/ubuntu20.04-x86_64/base/Dockerfile
 [trivy]: https://github.com/aquasecurity/trivy
-[docker-add-user]:
-  https://github.com/StatCan/daaas-containers/blob/99e1fad4755e8d31990f074afa7ea084150c071a/frontier-counts/Dockerfile#L1-L10
-[docker-set-user]:
-  https://github.com/StatCan/daaas-containers/blob/99e1fad4755e8d31990f074afa7ea084150c071a/frontier-counts/Dockerfile#L23
+[docker-add-user]: https://github.com/StatCan/daaas-containers/blob/99e1fad4755e8d31990f074afa7ea084150c071a/frontier-counts/Dockerfile#L1-L10
+[docker-set-user]: https://github.com/StatCan/daaas-containers/blob/99e1fad4755e8d31990f074afa7ea084150c071a/frontier-counts/Dockerfile#L23
 [distroless]: https://github.com/GoogleContainerTools/distroless
-[docker-build-args]:
-  https://docs.docker.com/engine/reference/commandline/build/#set-build-time-variables-build-arg
+[docker-build-args]: https://docs.docker.com/engine/reference/commandline/build/#set-build-time-variables-build-arg
 [hadolint]: https://github.com/hadolint/hadolint
 [alpine]: https://hub.docker.com/_/alpine
 [python wheels]: https://realpython.com/python-wheels/
-[alpine docker with python vs. debian]:
-  https://pythonspeed.com/articles/alpine-docker-python/
+[alpine docker with python vs. debian]: https://pythonspeed.com/articles/alpine-docker-python/
