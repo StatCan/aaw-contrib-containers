@@ -1,5 +1,4 @@
 kfp_pipeline_spec==0.1.8
-s3fs==0.2.2+1.g8aa929f
 pandas==1.2.4
 numpy==1.20.2
 minio==5.0.10
