@@ -12,7 +12,7 @@ COPY download_data.py /btap
 
 
 # removal due to security risk
-RUN apt-get update -y libc-bin 
+#RUN apt-get remove -y libc-bin 
 
 #COPY download_data.py download_data.py
 RUN chmod a+x download_data.py
