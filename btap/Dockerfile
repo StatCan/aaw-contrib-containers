@@ -1,5 +1,6 @@
 #FROM python:3.8
-FROM python:3.8-slim
+#FROM python:3.8-slim
+FROM python
 
 RUN apt-get -y update && apt-get install -y python && apt-get clean
                 
