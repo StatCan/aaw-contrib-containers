@@ -1,5 +1,3 @@
-#FROM python:3.7
-# FROM python:3.8-slim
 FROM ubuntu:20.04
 
 RUN apt-get update && apt-get install -y \
@@ -12,6 +10,9 @@ COPY requirements.txt /btap
 RUN pip install -r requirements.txt
 COPY download_data.py /btap
 
-#COPY download_data.py download_data.py
-RUN chmod a+x download_data.py
+RUN groupadd -g 1000 app && useradd -u 1000 app -g app
+
+RUN chown -R app:app /btap
+
+USER 1000:1000
 CMD ["python", "download_data.py"] 
