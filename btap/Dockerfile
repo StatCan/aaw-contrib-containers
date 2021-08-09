@@ -1,13 +1,20 @@
 #FROM python:3.7
-FROM python:3.8-slim
+# FROM python:3.8-slim
 
-RUN apt-get update && apt-get install -y software-properties-common --no-install-recommends \
-            && apt-get clean \ 
-            && rm -rf /var/lib/apt/lists/*
+# WORKDIR /btap
+# COPY requirements.txt /btap
 
-WORKDIR /btap
-COPY requirements.txt /btap
+# RUN pip install -r requirements.txt
+# #RUN python3 -m pip install -r requirements.txt
+# COPY download_data.py /btap
 
+
+FROM python:3.8-buster
+
+COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
-#RUN python3 -m pip install -r requirements.txt
-COPY download_data.py /btap
+
+COPY download_data.py download_data.py
+RUN chmod a+x download_data.py
+
+ENTRYPOINT ["python", "download_data.py"]
