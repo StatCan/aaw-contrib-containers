@@ -1,8 +1,8 @@
 #FROM python:3.7
-FROM python:3.8-slim
+# FROM python:3.8-slim
+FROM ubuntu:20.04
 
-
-RUN apt-get -y update && apt-get install -y python && apt-get clean
+RUN apt-get -y update && apt-get install -y python3 python3-pip
                 
 WORKDIR /btap
 COPY requirements.txt /btap
