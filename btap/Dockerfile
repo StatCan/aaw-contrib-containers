@@ -1,7 +1,7 @@
 FROM python:3.8
 #FROM python:3.8-slim
 
-RUN apt-get -y update && apt-get install -y python3.8 && apt-get clean
+RUN apt-get -y update && apt-get install -y python && apt-get clean
                 
 #WORKDIR /btap
 #COPY requirements.txt /btap
