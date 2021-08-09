@@ -2,13 +2,10 @@
 FROM python:3.8-slim
 
 
-RUN mkdir -p /home/btap \
-    && chown -R app /home/btap
-
 USER 1000
-#WORKDIR /btap
-COPY requirements.txt /home/btap
+WORKDIR /btap
+COPY requirements.txt /btap
 
 RUN pip install -r requirements.txt
 #RUN python3 -m pip install -r requirements.txt
-COPY download_data.py /home/btap
+COPY download_data.py /btap
