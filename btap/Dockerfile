@@ -3,7 +3,7 @@ FROM python:3.8-slim
 
 # create the pipeline directory
 RUN addgroup -g 1000 -S app && \
-    adduser -u 1000 -S app -G app
+    adduser -u 1000
 
 RUN mkdir -p /home/btap \
     && chown -R app /home/btap
