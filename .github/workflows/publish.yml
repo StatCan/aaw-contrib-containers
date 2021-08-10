@@ -1,3 +1,4 @@
+# TEST DO NOT MERGE
 # This workflow will build a docker container, publish it to Azure Container Registry, and deploy it to Azure Kubernetes Service using a helm chart.
 #
 # https://github.com/Azure/actions-workflow-samples/tree/master/Kubernetes
