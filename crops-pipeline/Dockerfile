@@ -29,6 +29,10 @@ RUN /venv/bin/conda-unpack
 #The runtime base image.
 FROM ubuntu:${UBUNTU_VERSION}@sha256:${UBUNTU_DIGEST_SHA} AS runtime
 
+#Install necessary packages.
+RUN apt-get update -y && \
+    apt-get install wget -y
+
 #Create non-root user for container.
 ARG USER=crops
 ARG USER_HOME=/home/crops
@@ -42,11 +46,15 @@ COPY --from=build /venv ${USER_HOME}/src/venv
 COPY . ${USER_HOME}/src
 WORKDIR ${USER_HOME}/src
 
+#Download and install MinIO client.
+RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc && \
+    chmod +x mc && \
+    mv mc /bin/mc
+
 #Start container as non-root user.
 USER $USER
 
 #Activate the virtual environment in the image.
 SHELL ["/bin/bash", "-c"]
 RUN source venv/bin/activate
-
 
