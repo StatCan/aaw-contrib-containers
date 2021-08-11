@@ -31,7 +31,8 @@ FROM ubuntu:${UBUNTU_VERSION}@sha256:${UBUNTU_DIGEST_SHA} AS runtime
 
 #Install necessary packages.
 RUN apt-get update -y && \
-    apt-get install wget -y
+    apt-get install wget -y && \
+    rm -rf /var/lib/apt/lists/* 
 
 #Create non-root user for container.
 ARG USER=crops
