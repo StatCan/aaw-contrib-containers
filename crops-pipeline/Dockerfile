@@ -55,7 +55,8 @@ RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc && \
 #Start container as non-root user.
 USER $USER
 
-#Activate the virtual environment in the image.
+#Activate the virtual environment in the image and adjust the path.
 SHELL ["/bin/bash", "-c"]
-RUN source venv/bin/activate
+RUN source venv/bin/activate && \
+    export PATH=$USER_HOME/src/venv/bin:$$PATH
 
