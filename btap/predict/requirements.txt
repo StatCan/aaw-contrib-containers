@@ -1,6 +1,0 @@
-tensorflow_gpu==2.5.0
-tensorflow_docs==0.0.0964cc6614d3285dc9513b812a211556ff114c7fc_
-keras_nightly==2.5.0.dev2021032900
-keras==2.6.0
-scikit_learn==0.24.2
-tensorflow==2.6.0
