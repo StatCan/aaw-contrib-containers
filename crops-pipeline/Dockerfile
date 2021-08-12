@@ -52,10 +52,7 @@ RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc && \
     chmod +x mc && \
     mv mc /bin/mc
 
-#Start container as non-root user.
+#Start container as non-root user and set the shell.
 USER $USER
-
-#Activate the virtual environment in the image.
 SHELL ["/bin/bash", "-c"]
-RUN source venv/bin/activate
 
