@@ -8,12 +8,11 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /btap
 COPY requirements.txt /btap
 RUN pip install -r requirements.txt
-COPY preprocessing.py /btap
-COPY plot.py /btap
+COPY feature_selection.py /btap
 
 RUN groupadd -g 1000 app && useradd -u 1000 app -g app
 
 RUN chown -R app:app /btap
 
 USER 1000:1000
-CMD ["python", "preprocessing.py"] 
+CMD ["python", "feature_selection.py"] 
