@@ -1,9 +1,0 @@
-kfp_pipeline_spec==0.1.8
-numpy==1.20.2
-minio==5.0.10
-plotly==4.14.3
-pandas==1.2.4
-matplotlib==3.4.1
-seaborn==0.11.1
-kfp==1.7.0
-scikit_learn==0.24.2
