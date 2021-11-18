@@ -5,15 +5,14 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
                 
-WORKDIR /btap
-COPY requirements.txt /btap
+WORKDIR /pipelines
+COPY requirements.txt /pipelines
 RUN pip install -r requirements.txt
-COPY preprocessing.py /btap
-COPY plot.py /btap
+COPY src /pipelines
+
 
 RUN groupadd -g 1000 app && useradd -u 1000 app -g app
 
-RUN chown -R app:app /btap
+RUN chown -R app:app /pipelines
 
 USER 1000:1000
-CMD ["python", "preprocessing.py"] 
