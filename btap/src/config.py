@@ -73,6 +73,7 @@ def establish_s3_connection(endpoint_url: str, access_key: str, secret_key: Secr
 
 
 def access_minio(path: str, operation: str, data: Union[str, pd.DataFrame]):
+
     """
     Used to read and write to minio.
 
