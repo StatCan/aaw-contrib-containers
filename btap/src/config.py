@@ -7,6 +7,7 @@ import pandas as pd
 import s3fs
 from pydantic import AnyHttpUrl, BaseModel, BaseSettings, SecretStr
 
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
