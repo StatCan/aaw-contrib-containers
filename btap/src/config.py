@@ -12,37 +12,24 @@ logger = logging.getLogger(__name__)
 
 
 class AppConfig(BaseModel):
-    """Application configuration."""
-
-    # Bucket used to store weather data
-    WEATHER_BUCKET_NAME: str = 'weather'
-    # URL where weather files are stored
-    WEATHER_DATA_STORE: AnyHttpUrl = 'https://raw.githubusercontent.com/NREL/openstudio-standards/nrcan/data/weather/'
-
-    # Parent level key in the BTAP CLI config weather data is stored under.
-    # The EPW file key will be under this.
-    BUILDING_OPTS_KEY: str = ':building_options'
-
-
-# There's a JSON file available with required credentials in it
-def json_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
-    return json.loads(settings.__config__.json_settings_path.read_text())
-
-class Settings(BaseSettings):
-    """Application settings. All of these can be set by the environment to override anything coded here."""
-
+	@@ -30,15 +30,20 @@ class Settings(BaseSettings):
     # Set up application specific information
     APP_CONFIG: AppConfig = AppConfig()
 
-    MINIO_URL: AnyHttpUrl
-    MINIO_ACCESS_KEY: str
-    MINIO_SECRET_KEY: SecretStr
+    MINIO_URL: AnyHttpUrl = Field(..., env='MINIO_URL')
+    MINIO_ACCESS_KEY: str = Field(..., env='MINIO_ACCESS_KEY')
+    MINIO_SECRET_KEY: SecretStr = Field(..., env='MINIO_SECRET_KEY')
 
     NAMESPACE: Path = Path('nrcan-btap')
 
     class Config:
+        # Prefix our variables to avoid collisions with other programs
+        env_prefix = 'BTAP_'
+
+        # Where to load JSON settings from
         minio_tenant: str = 'standard'
         json_settings_path: Path = Path(f'/vault/secrets/minio-{minio_tenant}-tenant-1.json')
+
         # Ignore extra values present in the JSON data
         extra = 'ignore'
 
