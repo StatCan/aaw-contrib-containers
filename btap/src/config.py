@@ -1,10 +1,13 @@
 import json
+import logging
 from pathlib import Path
 from typing import Any, Dict, Union
 
 import pandas as pd
 import s3fs
 from pydantic import AnyHttpUrl, BaseModel, BaseSettings, SecretStr
+
+logger = logging.getLogger(__name__)
 
 
 class AppConfig(BaseModel):
@@ -47,7 +50,7 @@ class Settings(BaseSettings):
             return (init_settings, json_config_settings_source, env_settings, file_secret_settings)
 
 settings = Settings()
-
+logger.debug("Loaded the following settings: %s", settings)
 
 def establish_s3_connection(endpoint_url: str, access_key: str, secret_key: SecretStr) -> s3fs.S3FileSystem:
     """Used to create a connection to an S3 data store.
@@ -60,6 +63,7 @@ def establish_s3_connection(endpoint_url: str, access_key: str, secret_key: Secr
     Returns:
         An s3fs file system object.
     """
+    logger.info("Establishing connection to S3 server: %s", endpoint_url)
     s3 = s3fs.S3FileSystem(
         anon=False,
         key=access_key,
@@ -85,11 +89,16 @@ def access_minio(path: str, operation: str, data: Union[str, pd.DataFrame]):
     Returns:
        Dataframe containing the data downladed from minio is returned for read operation and for write operation , null value is returned.
     """
+    
+    logger.info("%s minio data at %s", operation, path)
+    
     # Establish S3 connection
     s3 = establish_s3_connection(settings.MINIO_URL,
                                  settings.MINIO_ACCESS_KEY,
                                  settings.MINIO_SECRET_KEY)
 
+    logger.info("%s s3 connection %s", s3)
+    
     # s3fs doesn't seem to like Path objects, so use a posix path string for operations
     full_posix_path = settings.NAMESPACE.joinpath(path).as_posix()
 
