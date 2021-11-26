@@ -5,14 +5,26 @@ from typing import Any, Dict, Union
 
 import pandas as pd
 import s3fs
-from pydantic import AnyHttpUrl, BaseModel, BaseSettings, SecretStr
+from pydantic import AnyHttpUrl, BaseModel, BaseSettings, Field, SecretStr
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
 class AppConfig(BaseModel):
-	@@ -30,15 +30,20 @@ class Settings(BaseSettings):
+    """Application configuration."""
+    # Bucket used to store weather data
+    WEATHER_BUCKET_NAME: str = 'weather'
+    # URL where weather files are stored
+    WEATHER_DATA_STORE: AnyHttpUrl = 'https://raw.githubusercontent.com/NREL/openstudio-standards/nrcan/data/weather/'
+    # Parent level key in the BTAP CLI config weather data is stored under.
+    # The EPW file key will be under this.
+    BUILDING_OPTS_KEY: str = ':building_options'
+# There's a JSON file available with required credentials in it
+def json_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
+    return json.loads(settings.__config__.json_settings_path.read_text())
+class Settings(BaseSettings):
+    """Application settings. All of these can be set by the environment to override anything coded here."""
     # Set up application specific information
     APP_CONFIG: AppConfig = AppConfig()
 
@@ -42,12 +54,10 @@ logger.debug("Loaded the following settings: %s", settings)
 
 def establish_s3_connection(endpoint_url: str, access_key: str, secret_key: SecretStr) -> s3fs.S3FileSystem:
     """Used to create a connection to an S3 data store.
-
     Args:
         endpoint_url: The URL for the data store.
         access_key: The access key used to access the data store.
         secret_key: The secret key used to access the data store.
-
     Returns:
         An s3fs file system object.
     """
@@ -59,7 +69,7 @@ def establish_s3_connection(endpoint_url: str, access_key: str, secret_key: Secr
         client_kwargs={
             'endpoint_url': endpoint_url,
         },
-        config_kwargs={'connect_timeout': 10}
+        #config_kwargs={'connect_timeout': 10}
     )
 
     return s3
@@ -68,13 +78,11 @@ def establish_s3_connection(endpoint_url: str, access_key: str, secret_key: Secr
 def access_minio(path: str, operation: str, data: Union[str, pd.DataFrame]):
     """
     Used to read and write to minio.
-
     Args:
         tenant: default value is standard
         bucket: nrcan-btap
         path: file path where data is to be read from or written to
         data: for write operation, it contains the data to be written to minio
-
     Returns:
        Dataframe containing the data downladed from minio is returned for read operation and for write operation , null value is returned.
     """
