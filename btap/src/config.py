@@ -52,6 +52,7 @@ class Settings(BaseSettings):
 settings = Settings()
 logger.debug("Loaded the following settings: %s", settings)
 
+
 def establish_s3_connection(endpoint_url: str, access_key: str, secret_key: SecretStr) -> s3fs.S3FileSystem:
     """Used to create a connection to an S3 data store.
 
