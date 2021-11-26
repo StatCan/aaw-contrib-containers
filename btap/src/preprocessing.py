@@ -26,20 +26,19 @@ import copy
 import plot as pl
 import logging
 
-logging.basicConfig(filename='../output/log/debug.log', level=logging.DEBUG)
-# logging.basicConfig(filename='../output/log/info.log', level=logging.INFO)
+logging.basicConfig(filename='../output/log/preprocess.log', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
-def clean_data(df):
+def clean_data(df) -> pd.DataFrame:
     """
     Basic cleaning of the data using the following criterion:
     - dropping any column with more than 50% missing values
     The 50% threshold is a way to eliminate columns with too much missing values in the dataset. 
    We cant use N/A as it will elimnate the entire row /datapoint_id. Giving the number of features we have to work it its better we eliminate 
    columns with features that have too much missing values than to eliminate by rows, which is what N/A will do .
-    - dropping columns with 2 unquie values
-    For columns with 2 or 1 unique values are dropped during data cleaning as they have low variance 
+    - dropping columns with 1 unique value
+    For columns with  1 unique values are dropped during data cleaning as they have low variance 
     and hence have little or no significant contribution to the accuracy of the model. 
     Args:
         df: dataset to be cleaned
@@ -65,10 +64,8 @@ def read_output(path_elec,path_gas):
     Used to read the building simulation I/O file
 
     Args:
-        tenant: default value is standard
-        bucket: nrcan-btap
-        path_elec: file path where data is to be read from in minio. In the case of electric value, this would be path to the electric output file
-        path_gas: This would be path to the gas output file. This is optional 
+        path_elec: file path where data is to be read from in minio. This is a mandatory parameter and in the case where only one simulation I/O file is provided,  the path to this file should be indicated here. 
+        path_gas: This would be path to the gas output file. This is optional, if there is no gas output file to the loaded, then a value of path_gas ='' should be used
     Returns:
        btap_df: Dataframe containing the clean building parameters file.
        floor_sq: the square foot of the building
@@ -104,7 +101,7 @@ def read_output(path_elec,path_gas):
 
 def read_weather(path: str) -> pd.DataFrame:
     """
-    Used to read the weather epw file from minio
+    Used to read the weather .parque file from minio
 
     Args:
         path: file path where weather file is to be read from in minio
@@ -149,7 +146,8 @@ def read_hour_energy(path_elec,path_gas,floor_sq):
     Used to read the weather epw file from minio
 
     Args:
-        path: file path where weather.csv file is to be read from in minio
+        path_elec: file path where the electric hourly energy consumed file is to be read from in minio. This is a mandatory parameter and in the case where only one hourly energy output file is provided, the path to this file should be indicated here. 
+        path_gas: This would be path to the gas output file. This is optional, if there is no gas output file to the loaded, then a value of path_gas ='' should be used
         floor_sq: the square foot of the building
     Returns:
        energy_hour_melt: Dataframe containing the clean and transposed hourly energy file.
@@ -282,13 +280,12 @@ def categorical_encode(x_train, x_test, x_validate):
     Args:
          X_train: X trainset
          X_test:  X testset
-         X_validate: X validate set
+         X_validate: X validation set
     Returns:
         X_train_oh: encoded X trainset
         X_test_oh: encoded X testset
-        x_val_oh: encoded X validate set
+        x_val_oh: encoded X validation set
         all_features: all features after encoding.
-       y_validate_complete: Dataframe containing the target variable with corresponding datapointid for the validation set
     """
     # extracting the categorical columns
     cat_cols = x_train.select_dtypes(include=['object']).columns
@@ -359,7 +356,7 @@ def process_data(args):
     write_to_minio = acm.access_minio(operation='copy',
                  path=args.output_path,
                  data=data_json)
-    logger.info("%s write to mino  %s", write_to_minio)
+    logger.info("write to mino  ", write_to_minio)
     
     
     pl.target_plot(y_train,y_test)
@@ -370,14 +367,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # Paths must be passed in, not hardcoded
-    parser.add_argument('--in_hour', type=str, help='The minio bucket where the data is located in')
-    parser.add_argument('--in_build_params', type=str, help='Name of data file to be read')
-    parser.add_argument('--in_weather', type=str, help='Name of weather file to be read')
-    parser.add_argument('--output_path', type=str, help='Path of the local file where the output file should be written.')
-    parser.add_argument('--in_hour_val', type=str, help='The minio bucket where the data is located in')
-    parser.add_argument('--in_build_params_val', type=str, help='Name of data file to be read')
-    parser.add_argument('--in_hour_gas', type=str, help='The minio bucket where the data is located in')
-    parser.add_argument('--in_build_params_gas', type=str, help='Name of data file to be read')
+    parser.add_argument('--in_hour', type=str, help='The minio location and filename for the hourly energy consumption file is located. This would be the path for the electric hourly file if it exist.')
+    parser.add_argument('--in_build_params', type=str, help='The minio location and filename the building simulation I/O file. This would be the path for the electric hourly file if it exist.')
+    parser.add_argument('--in_weather', type=str, help='The minio location and filename for the converted  weather file to be read')
+    parser.add_argument('--in_hour_val', type=str, help='The minio location and filename for the hourly energy consumption file for the validation set, if it exist.')
+    parser.add_argument('--in_build_params_val', type=str, help='The minio location and filename for the building simulation I/O file for the validation set, if it exist.')
+    parser.add_argument('--in_hour_gas', type=str, help='The minio location and filename for the hourly energy consumption file is located. This would be the path for the gas hourly file if it exist.')
+    parser.add_argument('--in_build_params_gas', type=str, help='The minio location and filename the building simulation I/O file. This would be the path for the gas hourly file if it exist.')
+    parser.add_argument('--output_path', type=str, help='The minio location and filename where the output file should be written.')
     args = parser.parse_args()
 
     process_data(args)
