@@ -71,7 +71,8 @@ def establish_s3_connection(endpoint_url: str, access_key: str, secret_key: Secr
         secret=secret_key.get_secret_value(),
         client_kwargs={
             'endpoint_url': endpoint_url,
-        }
+        },
+        config_kwargs={'connect_timeout': 10}
     )
 
     return s3
