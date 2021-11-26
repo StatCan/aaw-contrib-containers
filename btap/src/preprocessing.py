@@ -26,7 +26,7 @@ import copy
 import plot as pl
 import logging
 
-logging.basicConfig(filename='../output/log/preprocess.log', level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
