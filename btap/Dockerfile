@@ -12,6 +12,7 @@ COPY src /pipelines
 
 RUN groupadd -g 1000 app && useradd -u 1000 app -g app
 
+
 RUN chown -R app:app /pipelines
 
 USER 1000:1000
