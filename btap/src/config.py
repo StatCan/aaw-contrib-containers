@@ -72,7 +72,7 @@ def establish_s3_connection(endpoint_url: str, access_key: str, secret_key: Secr
         #config_kwargs={'connect_timeout': 10}
     )
     # Wait longer for connections to blob storage to get established
-    s3.connect_timeout = 10
+    s3.connect_timeout = 60
 
     return s3
 
