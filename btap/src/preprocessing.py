@@ -154,7 +154,7 @@ def read_hour_energy(path_elec,path_gas,floor_sq):
     """
     
     s3 = acm.establish_s3_connection(acm.settings.MINIO_URL, acm.settings.MINIO_ACCESS_KEY, acm.settings.MINIO_SECRET_KEY)
-    logger.info("%s read_hour_energy s3 connection %s", s3)
+    logger.info("read_hour_energy s3 connection %s", s3)
     energy_hour_df_elec = pd.read_csv(s3.open(acm.settings.NAMESPACE.joinpath(path_elec).as_posix()))
     
     if path_gas:
