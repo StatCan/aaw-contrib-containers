@@ -488,7 +488,7 @@ def fit_evaluate(args):
                      path=args.output_path,
                      data=data_json)
     
-    logger.info("write to mino  ", write_to_minio)
+    logger.info("write to mino %s", write_to_minio)
     
     return
 
