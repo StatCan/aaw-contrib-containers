@@ -40,7 +40,7 @@ def select_features(args):
     data = acm.access_minio(operation='read',
                             path=args.in_obj_name,
                             data='')
-    logger.info("read from mino  ", data)
+    logger.info("read from mino %s", data.head())
     
     data = json.load(data)
     features =data["features"] 
