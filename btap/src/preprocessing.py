@@ -73,7 +73,7 @@ def read_output(path_elec,path_gas):
 
     # Load the data from blob storage.
     s3 = acm.establish_s3_connection(acm.settings.MINIO_URL, acm.settings.MINIO_ACCESS_KEY, acm.settings.MINIO_SECRET_KEY)
-    logger.info("%s read_output s3 connection %s", s3)
+    logger.info("read_output s3 connection %s", s3)
     btap_df_elec = pd.read_excel(s3.open(acm.settings.NAMESPACE.joinpath(path_elec).as_posix()))
     
     if path_gas:
