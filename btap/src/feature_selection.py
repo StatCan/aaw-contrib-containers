@@ -90,7 +90,7 @@ def select_features(args):
     write_to_minio = acm.access_minio(operation='copy',
                      path=args.output_path,
                      data=data_json)
-    logger.info("write to mino  ", write_to_minio)
+    logger.info("write to mino %s", write_to_minio)
     
     return
 
