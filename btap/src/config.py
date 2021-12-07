@@ -10,7 +10,6 @@ from pydantic import AnyHttpUrl, BaseModel, BaseSettings, Field, SecretStr
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-
 class AppConfig(BaseModel):
     """Application configuration."""
     # Bucket used to store weather data
