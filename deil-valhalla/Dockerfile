@@ -1,1 +1,1 @@
-FROM docker pull ghcr.io/gis-ops/docker-valhalla/valhalla:latest
+FROM ghcr.io/gis-ops/docker-valhalla/valhalla:latest
