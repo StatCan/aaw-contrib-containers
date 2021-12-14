@@ -1,10 +1,17 @@
 '''
 Uses the output from preprocessing and feature selection from mino, builds the model and then evaluate the model.
+
+Args:
+    in_obj_name: minio locationa and name of data file to be read, ideally the output file generated from preprocessing i.e. preprocessing_out
+    features: minio locationa and name of data file to be read, ideally the output file generated from feature selection i.e. feature_out
+    param_search: This parameter is used to determine if hyperparameter search can be performed or not, accepted value is yes or no
+    output_path: The minio location and filename where the output file should be written.
 '''
 import argparse
 import datetime
 import glob
 import json
+import logging
 import os
 import shutil
 import time
@@ -18,7 +25,7 @@ import tensorflow as tf
 import tensorflow.keras as keras
 # import tensorflow_docs as tfdocs
 # import tensorflow_docs.plots
-import tensorflow_docs.modeling
+# import tensorflow_docs.modeling
 # np.random.seed(1337)
 from keras import backend as K
 from keras import regularizers  # for l2 regularization
@@ -31,23 +38,20 @@ from keras.utils import np_utils
 from keras.wrappers.scikit_learn import KerasRegressor
 from matplotlib import pyplot as plt
 from sklearn import metrics
-from sklearn.preprocessing import StandardScaler,MinMaxScaler,RobustScaler 
-from sklearn.model_selection import cross_val_score,cross_val_predict
-from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.model_selection import (GridSearchCV, KFold, cross_val_predict,
                                      cross_val_score)
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import MinMaxScaler, Normalizer, StandardScaler
+from sklearn.preprocessing import (MinMaxScaler, Normalizer, RobustScaler,
+                                   StandardScaler)
 from tensorboard.plugins.hparams import api as hp
 from tensorflow.keras import layers
 from tensorflow.keras.optimizers import Adam
 
 import config as acm
 import plot as pl
-import logging
 
-logging.basicConfig(filename='../output/log/predict.log', level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 #######################################################
@@ -106,7 +110,7 @@ def model_builder(hp):
     """
     model = keras.Sequential()
     model.add(keras.layers.Flatten())
-    
+
     hp_activation= hp.Choice('activation', values=['relu','tanh','sigmoid'])
 #     hp_regularizers= hp.Choice('regularizers', values=[1e-4, 1e-5])
     for i in range(hp.Int("num_layers", 1,1)):
@@ -241,11 +245,11 @@ def evaluate(model, X_test, y_test, scalery, X_validate, y_validate, y_test_comp
     # Retrain the model
     y_test['y_pred_transformed'] =scalery.inverse_transform(y_test['y_pred'].values.reshape(-1,1))
     y_validate['y_pred_transformed'] =scalery.inverse_transform(y_validate['y_pred'].values.reshape(-1,1))
-    
+
     test_score = score( y_test['energy'], y_test['y_pred_transformed'])
     val_score = score( y_validate['energy'], y_validate['y_pred_transformed'])
-    
-    
+
+
     print("[Score test loss, test mae, test mse]:", test_score)
     print("[Score val loss, val mae, val mse]:", val_score)
 
@@ -257,28 +261,28 @@ def evaluate(model, X_test, y_test, scalery, X_validate, y_validate, y_test_comp
     y_test['y_pred_transformed'] =y_test['y_pred_transformed'].apply(lambda r : float((r*1.0)/1000))
     output_df = pd.merge(y_test,y_test_complete,left_index=True, right_index=True,how='left')
     annual_metric=score(output_df['Total Energy'],output_df['y_pred_transformed'])
-    
+
     y_validate_complete = y_validate_complete.groupby(['datapoint_id']).sum()
     y_validate_complete['Total Energy'] = y_validate_complete['Total Energy'].apply(lambda r: float(r / 365))
     output_val_df = ''
     y_validate = y_validate.groupby(['datapoint_id']).sum()
     y_validate['energy'] =y_validate['energy'].apply(lambda r : float((r*1.0)/1000))
     y_validate['y_pred_transformed'] =y_validate['y_pred_transformed'].apply(lambda r : float((r*1.0)/1000))
-    
-    
+
+
     output_val_df = pd.merge(y_validate,y_validate_complete,left_index=True, right_index=True,how='left')
     annual_metric_val=score(output_val_df['Total Energy'],output_val_df['y_pred_transformed'])
-    
+
     output_df = output_df.drop(['y_pred','energy_y','energy_x'],axis=1)
     output_val_df = output_val_df.drop(['y_pred','energy_y','energy_x'],axis=1)
-    
+
     pl.daily_plot(y_test,'test_set')
     pl.daily_plot(y_validate,'validation_set')
-    
+
     pl.annual_plot(output_df,'test_set')
     pl.annual_plot(output_val_df,'validation_set')
-    
-    
+
+
     print('****************TEST SET****************************')
     print(output_df.head(50))
     print(annual_metric)
@@ -286,12 +290,12 @@ def evaluate(model, X_test, y_test, scalery, X_validate, y_validate, y_test_comp
     print('****************VALIDATION SET****************************')
     print(output_val_df.head(50))
     print(annual_metric_val)
-    
+
     result= {
-            'metric': test_score,
-            'annual_metric':annual_metric,
+            'test_daily_metric': test_score,
+            'test_annual_metric':annual_metric,
             'output_df':output_df.values.tolist(),
-            'val_metric' : val_score,
+            'val_daily_metric' : val_score,
             'val_annual_metric':annual_metric_val,
             'output_val_df':output_val_df.values.tolist(),
             }
@@ -374,13 +378,13 @@ def create_model(dense_layers, activation, optimizer, dropout_rate, length, lear
                                    hist_callback,
                                    ],
                         epochs=epochs,
-                        #batch_size =batch_size,                    
+                        #batch_size =batch_size,
                         verbose=1,
                         # shuffle=False,
                         validation_split=0.2)
 #     pl.save_plot(history)
-    
-    
+
+
     print(model.summary())
     plt.ylabel('loss')
 
@@ -411,8 +415,8 @@ def fit_evaluate(args):
     data2 = acm.access_minio(operation='read',
                              path=args.features,
                              data='')
-    logger.info("%s read_output s3 connection %s", data)
-    
+    logger.info("read_output s3 connection %s", data)
+
     # removing log directory
     shutil.rmtree('../output/parameter_search/btap', ignore_errors=True)
 
@@ -437,7 +441,7 @@ def fit_evaluate(args):
     X_validate = X_validate[selected_features]
 
     col_length = X_train.shape[1]
-    
+
     #extracting the test data for the target variable
     y_test_complete = pd.DataFrame(data["y_test_complete"],columns=['energy','datapoint_id','Total Energy'])
     y_test = pd.DataFrame(data["y_test"],columns=['energy','datapoint_id'])
@@ -447,7 +451,7 @@ def fit_evaluate(args):
     #y_validate_complete = pd.DataFrame(data["y_validate_complete"],columns=['energy','datapoint_id'])
     print(y_validate_complete)
     y_validate= pd.DataFrame(data["y_validate"],columns=['energy','datapoint_id'])
-    
+
     scalerx= RobustScaler()
     scalery= RobustScaler()
     X_train = scalerx.fit_transform(X_train)
@@ -476,20 +480,20 @@ def fit_evaluate(args):
                              ,y_test_complete=y_test_complete,scalery=scalery,
                              X_validate = X_validate, y_validate=y_validate,
                              y_validate_complete= y_validate_complete,
-                             
+
                             )
     time_taken = ((time.time() - start_time)/60)
     print("********* Total time spent is ***********" + str(time_taken)+" minutes" )
-    
+
     data_json = json.dumps(results_pred).encode('utf-8')
 
     # copy data to minio
     write_to_minio = acm.access_minio(operation='copy',
                      path=args.output_path,
                      data=data_json)
-    
-    logger.info("write to mino %s", write_to_minio)
-    
+
+    logger.info("write to mino  %s", write_to_minio)
+
     return
 
 
