@@ -25,6 +25,7 @@ from datetime import datetime
 from io import StringIO
 from pathlib import Path
 
+import matplotlib
 import numpy as np
 import pandas as pd
 import pyarrow
@@ -392,9 +393,13 @@ def process_data(args):
                  data=data_json)
     logger.info("write to mino %s ", write_to_minio)
 
-
-    pl.target_plot(y_train,y_test)
-    pl.corr_plot(energy_daily_df)
+    try:
+        pl.target_plot(y_train,y_test)
+        pl.corr_plot(energy_daily_df)
+    except ValueError as ve:
+        logger.error("Unable to produce plots. Plotting threw an exception: %s", ve)
+    except matplotlib.units.ConversionError as ce:
+        logger.error("Unable to produce plots. matplotlib conversion error: %s", ce)
 
 
 if __name__ == '__main__':
