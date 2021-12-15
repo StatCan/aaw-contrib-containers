@@ -1,1 +1,1 @@
-FROM gcr.io/getindata-images-public/mlflow-gcp
+FROM gcr.io/getindata-images-public/mlflow-gcp:latest
