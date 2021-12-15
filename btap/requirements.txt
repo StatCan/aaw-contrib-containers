@@ -11,7 +11,7 @@ s3fs
 scikit_learn
 seaborn
 tensorboard
-tensorflow==2.6.0
+tensorflow==2.6.1
 tensorflow_gpu==2.6.0
 xgboost==1.4.2
 openpyxl
