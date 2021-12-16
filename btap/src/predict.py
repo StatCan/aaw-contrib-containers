@@ -17,7 +17,7 @@ import shutil
 import time
 from math import sqrt
 
-import keras_tuner as kt
+from keras_tuner import Hyperband
 import numpy as np
 import pandas as pd
 import s3fs
@@ -158,7 +158,7 @@ def predicts_hp(X_train, y_train, X_test, y_test, selected_feature):
     Returns:
        Model built from the set of hyperparameters combined.
     """
-    tuner = kt.Hyperband(model_builder,
+    tuner = Hyperband(model_builder,
                          objective='val_loss',
                          max_epochs=50,
                          overwrite=True,
