@@ -1,1 +1,1 @@
-FROM bitnami/postgresql:11.13.0-debian-10-r33
+FROM bitnami/postgresql:11.14.0-debian-10-r17
