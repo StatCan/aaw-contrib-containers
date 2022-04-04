@@ -1,0 +1,6 @@
+{
+    "filters": {
+        "min_severity": "Critical",
+        "watch_name": "watch-k8s-acr"
+    }
+}
