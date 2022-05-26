@@ -12,7 +12,7 @@ scikit_learn
 seaborn
 tensorboard
 tensorflow==2.6.0
-tensorflow_gpu==2.6.0
+tensorflow_gpu==2.7.2
 xgboost==1.4.2
 openpyxl
 pyarrow
