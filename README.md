@@ -18,7 +18,7 @@ Containers to be used for general purpose Data Science.
   the Docker community (e.g. security updates happen in a timely manner).
 
 - An [official base image][docker-official-bases] is usually a great starting
-  point to build off of.jlhhrtk;;;
+  point to build off of.
 
 - Many custom images only slightly extend a common base image (e.g. [Nvidia's
   base images][nvidia-base-image] are slight extensions of the ubuntu official
