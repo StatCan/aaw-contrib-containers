@@ -27,6 +27,13 @@ Containers to be used for general purpose Data Science.
 **Recommendation:** start from a small official base image and build layers
 ontop of it.
 
+**Example steps to add a new image to aaw-contrib-containers**
+1. Scan image using a tool like Trivy `$ ./trivy image hub.docker.com/yourdockerimage:latest (*best practice*)
+2. Create new branch of StatCan/aaw-contrib-contains
+3. Commit docker file and publish new branch
+4. Allow repo CI, ACR and Artifactory scan to complete
+5. Create pull request (ping us in our Slack space https://statcan-aaw.slack.com **#general**)
+
 ### Scan your containers for vulnerabilities
 
 - There are lots of tools to do this in an automated way (e.g. [trivy][])
