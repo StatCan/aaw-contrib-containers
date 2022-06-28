@@ -31,18 +31,18 @@ ENV NOTROOTUSER="${NOTROOTUSER}" \
     NB_UID=${NB_UID} \
     NB_GID=${NB_GID}
 
-#Install GO
-ARG GO_VERSION=1.16.7
-ARG GO_SHA=7fe7a73f55ba3e2285da36f8b085e5c0159e9564ef5f63ee0ed6b818ade8ef04
-ARG CRANE_VERSION=v0.8.0
+#Install GO, this, crane, and expect are likely uneeded at the moment
+#ARG GO_VERSION=1.16.7
+#ARG GO_SHA=7fe7a73f55ba3e2285da36f8b085e5c0159e9564ef5f63ee0ed6b818ade8ef04
+#ARG CRANE_VERSION=v0.8.0
 
-RUN curl -OL https://golang.org/dl/go$GO_VERSION.linux-amd64.tar.gz \
-    && echo "${GO_SHA} go$GO_VERSION.linux-amd64.tar.gz" | sha256sum -c - \
-    && tar -C /usr/local -xvf go$GO_VERSION.linux-amd64.tar.gz
-ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
+#RUN curl -OL https://golang.org/dl/go$GO_VERSION.linux-amd64.tar.gz \
+#    && echo "${GO_SHA} go$GO_VERSION.linux-amd64.tar.gz" | sha256sum -c - \
+#    && tar -C /usr/local -xvf go$GO_VERSION.linux-amd64.tar.gz
+#ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
 
 #Install Crane
-RUN go install github.com/google/go-containerregistry/cmd/crane@$CRANE_VERSION
+#RUN go install github.com/google/go-containerregistry/cmd/crane@$CRANE_VERSION
 
 #Copy over scripts
 COPY scripts /home/$NOTROOTUSER 
@@ -54,13 +54,11 @@ RUN chown -R $NOTROOTUSER /home/$NOTROOTUSER
 # Install Azure CLI
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    'expect' \
-    'nano'
-
-
+#ENV DEBIAN_FRONTEND=noninteractive
+#RUN apt-get update && \
+#    apt-get install -y --no-install-recommends \
+#    'expect' \
+#    'nano'
 USER $NOTROOTUSER
 
 # docker run -it --rm --entrypoint /bin/bash test
