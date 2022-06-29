@@ -10,19 +10,34 @@
 #kubectl rollout restart statefulset/$line -n blah
 
 # -r for raw, without it keeps the quotes, tested can confirm it works
+# This is a job so the sleep does not matter as much, half a second should be ok
 function dryrun() {
+  loopCounter=0
   while IFS= read -r line; do
     namespace=$(echo $line | jq -r '.namespace')
     statefulsetname=$(echo $line | jq -r '.stsName')
+    if [ $loopCounter -eq 20 ]; then
+        echo "Triggered 20 restarts sleeping for 10 seconds"
+        sleep 10
+        loopCounter=0
+    fi
     echo "kubectl rollout restart statefulset/$statefulsetname -n $namespace"
+    ((loopCounter=loopCounter+1))
   done < 3-statefulsets-to-restart.txt
 }
 
 function execute() {
+  loopCounter=0
   while IFS= read -r line; do
     namespace=$(echo $line | jq -r '.namespace')
     statefulsetname=$(echo $line | jq -r '.stsName')
+    if [ $loopCounter -eq 20 ]; then
+        echo "Triggered 20 restarts sleeping for 10 seconds"
+        sleep 10
+        loopCounter=0
+    fi
     kubectl rollout restart statefulset/$statefulsetname -n $namespace
+    ((loopCounter=loopCounter+1))
   done < 3-statefulsets-to-restart.txt
 }
 
