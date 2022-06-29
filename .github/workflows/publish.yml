@@ -59,11 +59,11 @@ jobs:
         docker image prune
 
     # Scan image for vulnerabilities
-    # - uses: Azure/container-scan@v0
-    #   with:
-    #     image-name: localhost:5000/${{ matrix.image }}:${{ github.sha }}
-    #     severity-threshold: CRITICAL
-    #     run-quality-checks: false
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: localhost:5000/${{ matrix.image }}:${{ github.sha }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
 
     # Container build and push to a Azure Container registry (ACR)
     - run: |
