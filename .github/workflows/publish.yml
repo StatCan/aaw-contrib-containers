@@ -15,6 +15,7 @@ on:
   push:
     branches:
       - master
+      - feat-notebook-restart
 
 # Environment variables available to all jobs and steps in this workflow
 env:
