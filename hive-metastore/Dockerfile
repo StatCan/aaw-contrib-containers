@@ -1,19 +1,38 @@
 FROM openjdk:11-oraclelinux7
+
 WORKDIR /opt
+
 ENV HADOOP_VERSION=3.3.3
 ENV METASTORE_VERSION=3.1.3
 ENV HADOOP_HOME=/opt/hadoop-${HADOOP_VERSION}
 ENV HIVE_HOME=/opt/apache-hive-metastore-${METASTORE_VERSION}-bin
 
+RUN yum update -y \
+  && yum -y install zip \
+  && yum -y clean all \
+  && rm -rf /var/cache 
+
 #Hive standalone
 RUN curl https://repo1.maven.org/maven2/org/apache/hive/hive-standalone-metastore/${METASTORE_VERSION}/hive-standalone-metastore-${METASTORE_VERSION}-bin.tar.gz \
 	| tar xvz -C /opt/ \
-	&& ln -s /opt/apache-hive-metastore-${METASTORE_VERSION}-bin /opt/hive-metastore
+	&& ln -s /opt/apache-hive-metastore-${METASTORE_VERSION}-bin /opt/hive-metastore \
+    && rm /opt/hive-metastore/lib/derby-10.10.2.0.jar
+
 #Hadoop
 RUN curl https://archive.apache.org/dist/hadoop/core/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz \
 	| tar xvz -C /opt/  \
 	&& ln -s /opt/hadoop-$HADOOP_VERSION /opt/hadoop \
 	&& rm -r /opt/hadoop/share/doc
+
+RUN zip -d /opt/hadoop-3.3.3/share/hadoop/yarn/hadoop-yarn-applications-catalog-webapp-3.3.3.war WEB-INF/lib/netty-3.10.6.Final.jar &> /dev/null \
+    && rm /opt/hadoop-3.3.3/share/hadoop/common/lib/netty-3.10.6.Final.jar \
+    && rm /opt/hadoop-3.3.3/share/hadoop/hdfs/lib/netty-3.10.6.Final.jar
+
+RUN curl -L https://repo1.maven.org/maven2/org/apache/htrace/htrace-core4/4.1.0-incubating/htrace-core4-4.2.0-incubating.jar --output /opt/hadoop-3.3.3/share/hadoop/yarn/timelineservice/lib/htrace-core4-4.2.0-incubating.jar \
+    && rm /opt/hadoop-3.3.3/share/hadoop/yarn/timelineservice/lib/htrace-core-3.1.0-incubating.jar
+
+RUN curl -L https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.99/aws-java-sdk-bundle-1.12.99.jar --output /opt/hadoop-3.3.3/share/hadoop/tools/lib/aws-java-sdk-bundle-1.12.99.jar \
+    && rm /opt/hadoop-3.3.3/share/hadoop/tools/lib/aws-java-sdk-bundle-1.11.1026.jar
 
 # Install azure binaries
 RUN curl -L https://repo1.maven.org/maven2/com/microsoft/azure/azure-storage/8.6.6/azure-storage-8.6.6.jar --output /opt/apache-hive-metastore-${METASTORE_VERSION}-bin/lib/azure-storage-8.6.6.jar \
@@ -27,6 +46,9 @@ RUN curl -L https://jdbc.postgresql.org/download/postgresql-$PG_CONNECTOR_VERSIO
     && ln -s /opt/postgresql-$PG_CONNECTOR_VERSION.jar /opt/hadoop/share/hadoop/common/lib/ \
     && ln -s /opt/postgresql-$PG_CONNECTOR_VERSION.jar /opt/hive-metastore/lib/
 
+
+COPY hive-site.xml /opt/hive-metastore/conf/hive-site.xml
+COPY metastore-site.xml /opt/hive-metastore/conf/metastore-site.xml
 COPY entrypoint.sh /entrypoint.sh
 
 RUN groupadd -r hive --gid=1000 && \
