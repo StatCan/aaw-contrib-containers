@@ -51,13 +51,6 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
-      # Scan image for vulnerabilities
-      - uses: Azure/container-scan@v0
-        with:
-          image-name: localhost:5000/${{ matrix.image }}:${{ github.sha }}
-          severity-threshold: CRITICAL
-          run-quality-checks: false
-
       # Container build and push to a Azure Container registry (ACR)
       - run: |
           docker build -f ${{ matrix.image }}/Dockerfile -t localhost:5000/${{ matrix.image }}:${{ github.sha }} ${{ matrix.image }}
@@ -70,3 +63,10 @@ jobs:
           docker pull localhost:5000/${{ matrix.image }}:${{ github.sha }}
           docker tag localhost:5000/${{ matrix.image }}:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.sha }}
           docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.sha }}
+
+      # Scan image for vulnerabilities
+      - uses: Azure/container-scan@v0
+        with:
+          image-name: localhost:5000/${{ matrix.image }}:${{ github.sha }}
+          severity-threshold: CRITICAL
+          run-quality-checks: false
