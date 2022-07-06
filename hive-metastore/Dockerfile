@@ -46,9 +46,6 @@ RUN curl -L https://jdbc.postgresql.org/download/postgresql-$PG_CONNECTOR_VERSIO
     && ln -s /opt/postgresql-$PG_CONNECTOR_VERSION.jar /opt/hadoop/share/hadoop/common/lib/ \
     && ln -s /opt/postgresql-$PG_CONNECTOR_VERSION.jar /opt/hive-metastore/lib/
 
-
-COPY hive-site.xml /opt/hive-metastore/conf/hive-site.xml
-COPY metastore-site.xml /opt/hive-metastore/conf/metastore-site.xml
 COPY entrypoint.sh /entrypoint.sh
 
 RUN groupadd -r hive --gid=1000 && \
