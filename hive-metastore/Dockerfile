@@ -37,7 +37,9 @@ RUN curl -L https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.1
 # Install azure binaries
 RUN curl -L https://repo1.maven.org/maven2/com/microsoft/azure/azure-storage/8.6.6/azure-storage-8.6.6.jar --output /opt/apache-hive-metastore-${METASTORE_VERSION}-bin/lib/azure-storage-8.6.6.jar \
     && curl -L https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-azure/3.3.3/hadoop-azure-3.3.3.jar --output /opt/apache-hive-metastore-${METASTORE_VERSION}-bin/lib/hadoop-azure-3.3.3.jar \
-    && curl -L https://repo1.maven.org/maven2/com/microsoft/azure/azure-storage-blob/11.0.1/azure-storage-blob-11.0.1.jar --output /opt/apache-hive-metastore-${METASTORE_VERSION}-bin/lib/azure-storage-blob-11.0.1.jar
+    && curl -L https://repo1.maven.org/maven2/com/microsoft/azure/azure-storage-blob/11.0.1/azure-storage-blob-11.0.1.jar --output /opt/apache-hive-metastore-${METASTORE_VERSION}-bin/lib/azure-storage-blob-11.0.1.jar \
+    && curl -L https://repo1.maven.org/maven2/com/microsoft/azure/azure-data-lake-store-sdk/2.3.9/azure-data-lake-store-sdk-2.3.9.jar  --output /opt/apache-hive-metastore-${METASTORE_VERSION}-bin/lib/azure-data-lake-store-sdk-2.3.9.jar \
+    && curl -L https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-azure-datalake/3.3.3/hadoop-azure-datalake-3.3.3.jar --output /opt/apache-hive-metastore-${METASTORE_VERSION}-bin/lib/hadoop-azure-datalake-3.3.3.jar 
 
 
 # Install the postgresql connector
