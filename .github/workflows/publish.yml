@@ -14,7 +14,7 @@ name: publish
 on:
   push:
     branches:
-      - master
+      - dev-notebook
 
 # Environment variables available to all jobs and steps in this workflow
 env:

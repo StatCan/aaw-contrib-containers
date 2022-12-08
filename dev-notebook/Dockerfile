@@ -6,14 +6,14 @@ ARG NOTROOTUSER="jovyan"
 ARG NB_UID="1000"
 ARG NB_GID="100"
 WORKDIR /home/$NOTROOTUSER
-ENV GOPATH=/home/jovyan/go
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
       'jq' \
       'curl' \
       'ca-certificates' \
-      'git'
+      'git' \
+      'postgresql-client-common'
 
 # Install kubectl
 ARG KUBECTL_VERSION=v1.23.0
@@ -31,24 +31,11 @@ ENV NOTROOTUSER="${NOTROOTUSER}" \
     NB_UID=${NB_UID} \
     NB_GID=${NB_GID}
 
-#Install GO
-ARG GO_VERSION=1.16.7
-ARG GO_SHA=7fe7a73f55ba3e2285da36f8b085e5c0159e9564ef5f63ee0ed6b818ade8ef04
-ARG CRANE_VERSION=v0.8.0
 
-RUN curl -OL https://golang.org/dl/go$GO_VERSION.linux-amd64.tar.gz \
-    && echo "${GO_SHA} go$GO_VERSION.linux-amd64.tar.gz" | sha256sum -c - \
-    && tar -C /usr/local -xvf go$GO_VERSION.linux-amd64.tar.gz
-ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
 
-#Install Crane
-RUN go install github.com/google/go-containerregistry/cmd/crane@$CRANE_VERSION
-
-COPY 1-RuntimeScanning /home/$NOTROOTUSER
-COPY run-job.sh /home/$NOTROOTUSER
 RUN chmod -R 755 /home/$NOTROOTUSER
 RUN chown -R $NOTROOTUSER /home/$NOTROOTUSER
 USER $NOTROOTUSER
 
-# docker run -it --rm --entrypoint /bin/bash test
-CMD ["./run-job.sh"]
+#infinite sleep
+ENTRYPOINT ["tail", "-f", "/dev/null"]
