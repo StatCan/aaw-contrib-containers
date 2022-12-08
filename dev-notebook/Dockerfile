@@ -13,7 +13,8 @@ RUN apt-get update && \
       'curl' \
       'ca-certificates' \
       'git' \
-      'postgresql-client-common'
+      'postgresql-client-common' \ 
+      'postgresql-client'
 
 # Install kubectl
 ARG KUBECTL_VERSION=v1.23.0
