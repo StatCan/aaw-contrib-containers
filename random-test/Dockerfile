@@ -1,4 +1,4 @@
-FROM python:3.8-buster
+FROM python:slim-buster
 
 COPY fibonacci-sum.py fibonacci-sum.py
 RUN chmod a+x fibonacci-sum.py
