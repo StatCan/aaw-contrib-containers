@@ -35,23 +35,19 @@ FROM ubuntu:22.04
 # disable debconf terminal input
 ARG DEBIAN_FRONTEND=noninteractive
 
-# update base image
-RUN apt-get update
-RUN apt-get install -y apt-utils
-RUN apt-get upgrade -y
-
-# install Open MPI and SQLite
-RUN apt-get install -y sqlite3 && \
-  apt-get install -y openmpi-bin && \
-  apt-get autoclean
-
-# download and install unixODBC (optional)
-RUN apt-get install -y unixodbc && \
-  apt-get autoclean
+# update base image, install dependencies, cleanup
+RUN apt-get update && \
+    apt-get install -y \
+    apt-utils \
+    sqlite3 \
+    openmpi-bin \
+    unixodbc && \
+    apt-get upgrade -y && \
+    rm -rf /var/lib/apt/lists/*
 
 # set local openM++ timezone
 RUN rm -f /etc/localtime && \
-  ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime
+    ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime
 
 # copy entry point and build scripts
 COPY entrypoint.sh /scripts/
@@ -66,10 +62,10 @@ ARG OMPP_GROUP=ompp
 ARG OMPP_UID=1999
 ARG OMPP_GID=1999
 
-ENV OMPP_USER  ${OMPP_USER}
-ENV OMPP_GROUP ${OMPP_GROUP}
-ENV OMPP_UID   ${OMPP_UID}
-ENV OMPP_GID   ${OMPP_GID}
+ENV OMPP_USER=${OMPP_USER} \
+    OMPP_GROUP=${OMPP_GROUP} \
+    OMPP_UID=${OMPP_UID} \
+    OMPP_GID=${OMPP_GID}
 
 # home directory and user are set by entrypoint.sh
 
