@@ -49,11 +49,6 @@ RUN apt-get update && \
 RUN rm -f /etc/localtime && \
     ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime
 
-# copy entry point and build scripts
-COPY entrypoint.sh /scripts/
-
-RUN chmod 755 /scripts/entrypoint.sh
-
 # Done with installation
 # set user, work directory and entry point
 #
@@ -65,8 +60,18 @@ ARG OMPP_GID=1999
 ENV OMPP_USER=${OMPP_USER} \
     OMPP_GROUP=${OMPP_GROUP} \
     OMPP_UID=${OMPP_UID} \
-    OMPP_GID=${OMPP_GID}
+    OMPP_GID=${OMPP_GID} \
+    HOME=/home/${OMPP_USER}
 
-# home directory and user are set by entrypoint.sh
+RUN groupadd -g ${OMPP_GID} ${OMPP_GROUP} && \
+    useradd --no-log-init -g ${OMPP_GROUP} -u ${OMPP_UID} ${OMPP_USER}
 
-ENTRYPOINT ["/scripts/entrypoint.sh"]
+RUN mkdir cd ${HOME} && \
+    chown ${OMPP_UID}:${OMPP_GID} ${HOME}
+
+USER $OMPP_USER
+
+SHELL ["/bin/bash", "-c"]
+
+# default command check MPIEXEC verson, when used as a kubernetes container override with custom mpiexec execution
+CMD mpiexec -V
