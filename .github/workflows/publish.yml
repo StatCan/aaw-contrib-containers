@@ -31,6 +31,8 @@ jobs:
     - id: set-matrix
       run: echo "::set-output name=matrix::{\"image\":[$(ls -d */ | sed 's~\(.*\)/$~\"\1\"~g' | paste -sd ',')]}"
   build:
+    env: 
+      TRIVY_VERSION: "v0.43.1"
     needs: listimages
     strategy:
       fail-fast: false
@@ -59,11 +61,10 @@ jobs:
         docker image prune
 
     # Scan image for vulnerabilities
-    - uses: Azure/container-scan@v0
-      with:
-        image-name: localhost:5000/${{ matrix.image }}:${{ github.sha }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
+    - name: Aqua Security Trivy image scan
+      run: |
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
+        trivy image localhost:5000/${{ matrix.image }}:${{ github.sha }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL
 
     # Container build and push to a Azure Container registry (ACR)
     - run: |
