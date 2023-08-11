@@ -26,6 +26,8 @@ jobs:
   build:
     env: 
       TRIVY_VERSION: "v0.43.1"
+      #https://github.com/aquasecurity/trivy/issues/2432#issuecomment-1172432975
+      DOCKLE_HOST: "unix:///var/run/docker.sock" 
     needs: listimages
     strategy:
       fail-fast: false
