@@ -28,6 +28,9 @@ jobs:
       TRIVY_VERSION: "v0.43.1"
       #https://github.com/aquasecurity/trivy/issues/2432#issuecomment-1172432975
       DOCKLE_HOST: "unix:///var/run/docker.sock" 
+      # https://github.com/goodwithtech/dockle#self-hosted-registry-basicauth
+      #DOCKLE_USERNAME: USERNAME
+      #DOCKLE_PASSWORD: PASSWORD
     needs: listimages
     strategy:
       fail-fast: false
@@ -45,8 +48,13 @@ jobs:
     - run: |
         docker build -f ${{ matrix.image }}/Dockerfile -t localhost:5000/${{ matrix.image }}:${{ github.sha }} ${{ matrix.image }}
         docker push localhost:5000/${{ matrix.image }}:${{ github.sha }}
-        docker rmi localhost:5000/${{ matrix.image }}:${{ github.sha }}
         docker image prune
+
+    # Scan image for vulnerabilities
+    - name: Aqua Security Trivy image scan
+      run: |
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
+        trivy image localhost:5000/${{ matrix.image }}:${{ github.sha }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL
 
     # Run Dockle
     - name: Run dockle
@@ -57,10 +65,3 @@ jobs:
         exit-code: '1'
         exit-level: 'fatal'
         ignore: 'DKL-DI-0006'
-
-    # Scan image for vulnerabilities
-    - name: Aqua Security Trivy image scan
-      run: |
-        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
-        trivy image localhost:5000/${{ matrix.image }}:${{ github.sha }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL
-
