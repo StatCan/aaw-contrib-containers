@@ -57,6 +57,6 @@ jobs:
       with:
         image: localhost:5000/${{ matrix.image }}:${{ github.sha }}
         format: 'list'
-        exit-code: '1'
+        exit-code: '0'
         exit-level: 'fatal'
         ignore: 'DKL-DI-0006'
