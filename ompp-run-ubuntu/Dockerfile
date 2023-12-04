@@ -1,4 +1,4 @@
-# Docker image to run openM++ models on latest Ubuntu LTS
+# Docker image to run openM++ models on latest Ubuntu 22.04
 #
 # https://github.com/openmpp/docker/blob/master/ompp-run-ubuntu/
 #
@@ -70,6 +70,8 @@ RUN mkdir cd ${HOME} && \
     chown ${OMPP_UID}:${OMPP_GID} ${HOME}
 
 USER $OMPP_USER
+
+RUN ulimit -s -S 65536
 
 SHELL ["/bin/bash", "-c"]
 
