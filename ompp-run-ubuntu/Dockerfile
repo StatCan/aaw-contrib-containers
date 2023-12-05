@@ -1,4 +1,4 @@
-# Docker image to run openM++ models on latest Ubuntu LTS
+# Docker image to run openM++ models on latest Ubuntu 22.04
 #
 # https://github.com/openmpp/docker/blob/master/ompp-run-ubuntu/
 #
@@ -35,8 +35,10 @@ FROM ubuntu:22.04
 # disable debconf terminal input
 ARG DEBIAN_FRONTEND=noninteractive
 
+# For OncoSim MPI inject to the default bashrc as non other exist, can change later
+RUN echo "ulimit -S -s 65536" >> etc/bash.bashrc && \
 # update base image, install dependencies, cleanup
-RUN apt-get update && \
+    apt-get update && \
     apt-get install -y \
     apt-utils \
     sqlite3 \
