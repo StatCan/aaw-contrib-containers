@@ -35,6 +35,9 @@ FROM ubuntu:22.04
 # disable debconf terminal input
 ARG DEBIAN_FRONTEND=noninteractive
 
+# inject to the default bashrc as non other exist, can change later
+RUN echo "ulimit -S -s 65536" >> etc/bash.bashrc
+
 # update base image, install dependencies, cleanup
 RUN apt-get update && \
     apt-get install -y \
@@ -71,9 +74,7 @@ RUN mkdir cd ${HOME} && \
 
 USER $OMPP_USER
 
-RUN ulimit -s -S 65536
-
 SHELL ["/bin/bash", "-c"]
 
 # default command check MPIEXEC verson, when used as a kubernetes container override with custom mpiexec execution
-CMD mpiexec -V
+# CMD mpiexec -V
