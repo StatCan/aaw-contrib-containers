@@ -11,7 +11,13 @@
 #
 # 2. Change the values for the REGISTRY_NAME, CLUSTER_NAME, CLUSTER_RESOURCE_GROUP and NAMESPACE environment variables (below).
 name: build
-on: [pull_request]
+on: 
+  pull_request:
+  schedule: 
+    - cron: '0 23 * * *'
+
+env:
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 # Environment variables available to all jobs and steps in this workflow
 jobs:
@@ -60,3 +66,10 @@ jobs:
         exit-code: '0'
         exit-level: 'fatal'
         ignore: 'DKL-DI-0006'
+
+    - name: Slack Notification
+      if: failure() && github.event_name=='schedule'
+      uses: act10ns/slack@v1
+      with: 
+        status: failure
+        message: aaw-contrib-containers build failed. https://github.com/StatCan/aaw-contrib-containers/actions/runs/${{github.run_id}}
