@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "sp2jira-cronjob.fullname" . }}-test-connection"
+  labels:
+    {{- include "sp2jira-cronjob.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "sp2jira-cronjob.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never
