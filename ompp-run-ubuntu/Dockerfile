@@ -73,7 +73,7 @@ RUN mkdir cd ${HOME} && \
 
 USER $OMPP_USER
 
-SHELL ["/bin/bash", "-c"]
+SHELL ["/bin/bash"]
 
 # default command check MPIEXEC verson, when used as a kubernetes container override with custom mpiexec execution
-CMD mpiexec -V
+CMD mpiexec -V && ulimit -S -s
