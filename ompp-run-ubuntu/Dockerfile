@@ -41,11 +41,25 @@ RUN echo "ulimit -S -s 65536" >> etc/bash.bashrc && \
     apt-get update && \
     apt-get install -y \
     apt-utils \
+    curl \
+    jq \
+    htop \
+    tree \
+    zip \
     sqlite3 \
     openmpi-bin \
     unixodbc && \
     apt-get upgrade -y && \
     rm -rf /var/lib/apt/lists/*
+
+ARG KUBECTL_VERSION=v1.28.2
+ARG KUBECTL_URL=https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
+ARG KUBECTL_SHA=c922440b043e5de1afa3c1382f8c663a25f055978cbc6e8423493ec157579ec5
+
+RUN curl -LO "${KUBECTL_URL}" \
+    && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
+    && chmod +x ./kubectl \
+    && sudo mv ./kubectl /usr/local/bin/kubectl
 
 # set local openM++ timezone
 RUN rm -f /etc/localtime && \
