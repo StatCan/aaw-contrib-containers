@@ -65,7 +65,11 @@ jobs:
       run: |
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
         trivy image localhost:5000/${{ matrix.image }}:${{ github.sha }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL
-    
+
+    # Image building/storing locally
+    - name: Make Dockerfiles
+      run: make generate-dockerfiles
+
     # Run Hadolint
     - name: Run Hadolint
       run:  |
