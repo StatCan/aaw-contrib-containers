@@ -59,7 +59,7 @@ ARG KUBECTL_SHA=c922440b043e5de1afa3c1382f8c663a25f055978cbc6e8423493ec157579ec5
 RUN curl -LO "${KUBECTL_URL}" \
     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
     && chmod +x ./kubectl \
-    && sudo mv ./kubectl /usr/local/bin/kubectl
+    && mv ./kubectl /usr/local/bin/kubectl
 
 # set local openM++ timezone
 RUN rm -f /etc/localtime && \
