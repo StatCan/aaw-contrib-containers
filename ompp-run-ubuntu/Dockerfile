@@ -37,9 +37,11 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # For OncoSim MPI inject to the default bashrc as non other exist, can change later
 RUN echo "ulimit -S -s 65536" >> etc/bash.bashrc && \
-# update base image, install dependencies, cleanup
+# update base image, install dependencies, cleanup, install OpenSSH for MPI to communicate between containers
     apt-get update && \
     apt-get install -y \
+    openssh-client \
+    openssh-server \
     apt-utils \
     curl \
     jq \
@@ -64,18 +66,14 @@ RUN curl -LO "${KUBECTL_URL}" \
 
 # set local openM++ timezone
 RUN rm -f /etc/localtime && \
-    ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime
-
-# Install OpenSSH for MPI to communicate between containers
-RUN apt-get install -y --no-install-recommends openssh-client openssh-server && \
-    mkdir -p /var/run/sshd
-
+    ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime && \
+    mkdir -p /var/run/sshd && \
 # Allow OpenSSH to talk to containers without asking for confirmation
 # by disabling StrictHostKeyChecking.
 # mpi-operator mounts the .ssh folder from a Secret. For that to work, we need
 # to disable UserKnownHostsFile to avoid write permissions.
 # Disabling StrictModes avoids directory and files read permission checks.
-RUN sed -i 's/[ #]\(.*StrictHostKeyChecking \).*/ \1no/g' /etc/ssh/ssh_config && \
+    sed -i 's/[ #]\(.*StrictHostKeyChecking \).*/ \1no/g' /etc/ssh/ssh_config && \
     echo "    UserKnownHostsFile /dev/null" >> /etc/ssh/ssh_config && \
     sed -i 's/#\(StrictModes \).*/\1no/g' /etc/ssh/sshd_config
 
