@@ -15,6 +15,7 @@ RUN apt update && apt install -y --no-install-recommends \
             sqlite3 \
             curl \
             ca-certificates \
+        &&  apt-get upgrade -y \
 		&& rm -rf /var/lib/apt/lists/*
 
 # Add priviledge separation directoy to run sshd as root.
