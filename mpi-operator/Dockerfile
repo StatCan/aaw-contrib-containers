@@ -3,7 +3,7 @@
 # Added configuration for OpenM++ from https://github.com/openmpp/docker/blob/master/ompp-run-debian/Dockerfile
 # Added kubectl cli for interacting with kubeapi server from containers
 
-FROM debian:bullseye
+FROM debian:bookworm
 
 ARG port=2222
 
