@@ -17,7 +17,7 @@ RUN apt update \
             sqlite3 \
             curl \
             ca-certificates \
-            minizip \
+        && apt remove zlib1g \
 		&& rm -rf /var/lib/apt/lists/*
 
 # Add priviledge separation directoy to run sshd as root.
