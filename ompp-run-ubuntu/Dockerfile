@@ -37,9 +37,11 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # For OncoSim MPI inject to the default bashrc as non other exist, can change later
 RUN echo "ulimit -S -s 65536" >> etc/bash.bashrc && \
-# update base image, install dependencies, cleanup
+# update base image, install dependencies, cleanup, install OpenSSH for MPI to communicate between containers
     apt-get update && \
     apt-get install -y \
+    openssh-client \
+    openssh-server \
     apt-utils \
     curl \
     jq \
@@ -52,6 +54,7 @@ RUN echo "ulimit -S -s 65536" >> etc/bash.bashrc && \
     apt-get upgrade -y && \
     rm -rf /var/lib/apt/lists/*
 
+# Install kubectl cli to be able to utilize file transfer functionality between containers
 ARG KUBECTL_VERSION=v1.28.2
 ARG KUBECTL_URL=https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
 ARG KUBECTL_SHA=c922440b043e5de1afa3c1382f8c663a25f055978cbc6e8423493ec157579ec5
@@ -63,7 +66,16 @@ RUN curl -LO "${KUBECTL_URL}" \
 
 # set local openM++ timezone
 RUN rm -f /etc/localtime && \
-    ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime
+    ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime && \
+    mkdir -p /var/run/sshd && \
+# Allow OpenSSH to talk to containers without asking for confirmation
+# by disabling StrictHostKeyChecking.
+# mpi-operator mounts the .ssh folder from a Secret. For that to work, we need
+# to disable UserKnownHostsFile to avoid write permissions.
+# Disabling StrictModes avoids directory and files read permission checks.
+    sed -i 's/[ #]\(.*StrictHostKeyChecking \).*/ \1no/g' /etc/ssh/ssh_config && \
+    echo "    UserKnownHostsFile /dev/null" >> /etc/ssh/ssh_config && \
+    sed -i 's/#\(StrictModes \).*/\1no/g' /etc/ssh/sshd_config
 
 # Done with installation
 # set user, work directory and entry point
