@@ -13,6 +13,7 @@ RUN apt update && apt install -y --no-install-recommends \
             libcap2-bin \
             openmpi-bin \
             sqlite3 \
+            curl \
 		&& rm -rf /var/lib/apt/lists/*
 
 # Add priviledge separation directoy to run sshd as root.
