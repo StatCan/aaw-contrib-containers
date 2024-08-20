@@ -7,7 +7,9 @@ FROM debian:bookworm
 
 ARG port=2222
 
-RUN apt update && apt install -y --no-install-recommends \
+RUN apt update \
+        && apt-get upgrade -y \
+        && apt install -y --no-install-recommends \
 			openssh-server \
 			openssh-client \
             libcap2-bin \
@@ -15,7 +17,7 @@ RUN apt update && apt install -y --no-install-recommends \
             sqlite3 \
             curl \
             ca-certificates \
-        &&  apt-get upgrade -y \
+            minizip \
 		&& rm -rf /var/lib/apt/lists/*
 
 # Add priviledge separation directoy to run sshd as root.
