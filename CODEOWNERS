@@ -1,10 +1,10 @@
 # DAaaS are the default owners
-*                     @statcan/daaas
+*                     @statcan/aaw-maintainers
 
 # Codeowners is restricted
-CODEOWNERS            @statcan/daaas-admins
-LICENSE               @statcan/daaas-admins
-LICENSE.md            @statcan/daaas-admins
+CODEOWNERS            @statcan/aaw-admins
+LICENSE               @StatCan/aaw-admins
+LICENSE.md            @StatCan/aaw-admins
 
 # Workflows are restricted
 /.github/workflows/   @statcan/daaas-workflows
