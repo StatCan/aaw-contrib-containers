@@ -56,7 +56,7 @@ WORKDIR /home/mpiuser
 
 # Configurations for running sshd as non-root.
 COPY --chown=mpiuser sshd_config .sshd_config
-RUN echo "Port $port" >> /home/mpiuser/.sshd_config
+RUN echo -e "\nPort $port" >> /home/mpiuser/.sshd_config
 
 # Stepdown to non-root user
 USER mpiuser
