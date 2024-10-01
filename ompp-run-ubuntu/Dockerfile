@@ -77,22 +77,11 @@ RUN curl -LO "${KUBECTL_URL}" \
     && chmod +x ./kubectl \
     && mv ./kubectl /usr/local/bin/kubectl
 
-# Install OpenM++
-ARG OMPP_VERSION=v1.17.4
-ARG OMPP_URL=https://github.com/openmpp/main/releases/download/${OMPP_VERSION}/openmpp_debian-11_20240731.tar.gz
-ARG OMPP_SHA=4ecb8c6b31030cf4ec92030b3e2ada2d5a57b557829d2b98e69d6326931ccac6
-
-RUN curl -LO "${OMPP_URL}" \
-    && echo "${OMPP_SHA} openmpp_debian-11_20240731.tar.gz" | sha256sum -c - \
-    && tar -xf openmpp_debian-11_20240731.tar.gz -C /home/${OMPP_USER}
-
 # set local openM++ timezone
 RUN rm -f /etc/localtime && \
     ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime
 
-# Done with installation
-# set user, work directory and entry point
-#
+# set user, create home/work directories
 ENV OMPP_USER=${OMPP_USER} \
     OMPP_GROUP=${OMPP_GROUP} \
     OMPP_UID=${OMPP_UID} \
@@ -102,7 +91,17 @@ ENV OMPP_USER=${OMPP_USER} \
 RUN groupadd -g ${OMPP_GID} ${OMPP_GROUP} && \
     useradd --no-log-init -g ${OMPP_GROUP} -u ${OMPP_UID} ${OMPP_USER} && \
     mkdir cd ${HOME} && \
-    chown ${OMPP_UID}:${OMPP_GID} ${HOME}
+    mkdir cd ${HOME}/work && \
+    chown -R ${OMPP_UID}:${OMPP_GID} ${HOME} 
+
+# Install OpenM++ into user home directory
+ARG OMPP_VERSION=v1.17.4
+ARG OMPP_URL=https://github.com/openmpp/main/releases/download/${OMPP_VERSION}/openmpp_debian-11_20240731.tar.gz
+ARG OMPP_SHA=4ecb8c6b31030cf4ec92030b3e2ada2d5a57b557829d2b98e69d6326931ccac6
+
+RUN curl -LO "${OMPP_URL}" \
+    && echo "${OMPP_SHA} openmpp_debian-11_20240731.tar.gz" | sha256sum -c - \
+    && tar -xf ./openmpp_debian-11_20240731.tar.gz -C ${HOME}
 
 USER $OMPP_USER
 
