@@ -89,10 +89,8 @@ ENV OMPP_USER=${OMPP_USER} \
     HOME=/home/${OMPP_USER}
 
 RUN groupadd -g ${OMPP_GID} ${OMPP_GROUP} && \
-    useradd --no-log-init -g ${OMPP_GROUP} -u ${OMPP_UID} ${OMPP_USER} && \
-    mkdir cd ${HOME} && \
-    mkdir cd ${HOME}/work && \
-    chown -R ${OMPP_UID}:${OMPP_GID} ${HOME} 
+    useradd --no-log-init -m -g ${OMPP_GROUP} -u ${OMPP_UID} ${OMPP_USER} && \
+    mkdir ${HOME}/work
 
 # Install OpenM++ into user home directory
 ARG OMPP_VERSION=v1.17.4
