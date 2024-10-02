@@ -79,5 +79,5 @@ jobs:
         docker pull localhost:5000/${{ matrix.image }}:${{ github.sha }}
         docker tag localhost:5000/${{ matrix.image }}:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.sha }}
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.ref_name }}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.ref_name }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.event.base_ref }}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.event.base_ref }}
