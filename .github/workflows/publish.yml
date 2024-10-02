@@ -74,8 +74,10 @@ jobs:
         sudo chmod +x hadolint
         ./hadolint ${{ matrix.image }}/Dockerfile --no-fail
     
-    # Container build and push to a Azure Container registry (ACR)
+    # Container build and push to a Azure Container registry (ACR), push a tag with the branch name as well
     - run: |
         docker pull localhost:5000/${{ matrix.image }}:${{ github.sha }}
         docker tag localhost:5000/${{ matrix.image }}:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.sha }}
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.base_ref }}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.base_ref }}

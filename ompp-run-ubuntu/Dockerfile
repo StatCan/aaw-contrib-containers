@@ -34,6 +34,10 @@ FROM ubuntu:22.04
 
 # disable debconf terminal input
 ARG DEBIAN_FRONTEND=noninteractive
+ARG OMPP_USER=ompp
+ARG OMPP_GROUP=ompp
+ARG OMPP_UID=1999
+ARG OMPP_GID=1999
 
 # For OncoSim MPI inject to the default bashrc as non other exist, can change later
 RUN echo "ulimit -S -s 65536" >> etc/bash.bashrc && \
@@ -49,10 +53,19 @@ RUN echo "ulimit -S -s 65536" >> etc/bash.bashrc && \
     tree \
     zip \
     sqlite3 \
-    openmpi-bin \
+    g++ \
+    make \
     unixodbc && \
     apt-get upgrade -y && \
     rm -rf /var/lib/apt/lists/*
+
+# download and install Go
+RUN GO_VER=1.22.5; \
+  curl -L -o /tmp/go_setup.tar.gz https://dl.google.com/go/go${GO_VER}.linux-amd64.tar.gz && \
+  tar -xzf /tmp/go_setup.tar.gz -C /tmp && \
+  mv /tmp/go / && \
+  rm -rf /tmp/gocache /tmp/tmp && \
+  rm /tmp/go_setup.tar.gz
 
 # Install kubectl cli to be able to utilize file transfer functionality between containers
 ARG KUBECTL_VERSION=v1.28.2
@@ -66,25 +79,9 @@ RUN curl -LO "${KUBECTL_URL}" \
 
 # set local openM++ timezone
 RUN rm -f /etc/localtime && \
-    ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime && \
-    mkdir -p /var/run/sshd && \
-# Allow OpenSSH to talk to containers without asking for confirmation
-# by disabling StrictHostKeyChecking.
-# mpi-operator mounts the .ssh folder from a Secret. For that to work, we need
-# to disable UserKnownHostsFile to avoid write permissions.
-# Disabling StrictModes avoids directory and files read permission checks.
-    sed -i 's/[ #]\(.*StrictHostKeyChecking \).*/ \1no/g' /etc/ssh/ssh_config && \
-    echo "    UserKnownHostsFile /dev/null" >> /etc/ssh/ssh_config && \
-    sed -i 's/#\(StrictModes \).*/\1no/g' /etc/ssh/sshd_config
+    ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime
 
-# Done with installation
-# set user, work directory and entry point
-#
-ARG OMPP_USER=ompp
-ARG OMPP_GROUP=ompp
-ARG OMPP_UID=1999
-ARG OMPP_GID=1999
-
+# set user, create home/work directories
 ENV OMPP_USER=${OMPP_USER} \
     OMPP_GROUP=${OMPP_GROUP} \
     OMPP_UID=${OMPP_UID} \
@@ -92,10 +89,17 @@ ENV OMPP_USER=${OMPP_USER} \
     HOME=/home/${OMPP_USER}
 
 RUN groupadd -g ${OMPP_GID} ${OMPP_GROUP} && \
-    useradd --no-log-init -g ${OMPP_GROUP} -u ${OMPP_UID} ${OMPP_USER}
+    useradd --no-log-init -m -g ${OMPP_GROUP} -u ${OMPP_UID} ${OMPP_USER} && \
+    mkdir ${HOME}/work
 
-RUN mkdir cd ${HOME} && \
-    chown ${OMPP_UID}:${OMPP_GID} ${HOME}
+# Install OpenM++ into user home directory
+ARG OMPP_VERSION=v1.17.4
+ARG OMPP_URL=https://github.com/openmpp/main/releases/download/${OMPP_VERSION}/openmpp_debian-11_20240731.tar.gz
+ARG OMPP_SHA=4ecb8c6b31030cf4ec92030b3e2ada2d5a57b557829d2b98e69d6326931ccac6
+
+RUN curl -LO "${OMPP_URL}" \
+    && echo "${OMPP_SHA} openmpp_debian-11_20240731.tar.gz" | sha256sum -c - \
+    && tar -xf ./openmpp_debian-11_20240731.tar.gz -C ${HOME}
 
 USER $OMPP_USER
 
