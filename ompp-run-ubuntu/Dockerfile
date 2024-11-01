@@ -94,12 +94,13 @@ RUN groupadd -g ${OMPP_GID} ${OMPP_GROUP} && \
 
 # Install OpenM++ into user home directory
 ARG OMPP_VERSION=v1.17.5
-ARG OMPP_URL=https://github.com/openmpp/main/releases/download/${OMPP_VERSION}/openmpp_debian-11_20241021.tar.gz
+ARG OMPP_DATE=20241021
+ARG OMPP_URL=https://github.com/openmpp/main/releases/download/${OMPP_VERSION}/openmpp_debian-11_${OMPP_DATE}.tar.gz
 ARG OMPP_SHA=79084a009f3bad3c0d81cb12ccc844458d29b70d199352233aad3d94489427c9
 
 RUN curl -LO "${OMPP_URL}" \
-    && echo "${OMPP_SHA} openmpp_debian-11_20240731.tar.gz" | sha256sum -c - \
-    && tar -xf ./openmpp_debian-11_20240731.tar.gz -C ${HOME}
+    && echo "${OMPP_SHA} openmpp_debian-11_${OMPP_DATE}.tar.gz" | sha256sum -c - \
+    && tar -xf ./openmpp_debian-11_${OMPP_DATE}.tar.gz -C ${HOME}
 
 USER $OMPP_USER
 
