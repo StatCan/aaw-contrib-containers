@@ -51,7 +51,7 @@ ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime && \
 echo "ulimit -S -s 65536" >> etc/bash.bashrc
 
 # Add non-root user
-RUN useradd -m mpiuser
+RUN useradd -s /usr/bin/bash -m mpiuser
 WORKDIR /home/mpiuser
 
 # Configurations for running sshd as non-root.

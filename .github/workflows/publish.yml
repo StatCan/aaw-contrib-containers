@@ -34,6 +34,7 @@ jobs:
     env: 
       TRIVY_VERSION: "v0.43.1"
       HADOLINT_VERSION: "2.12.0"
+      OPENMPP_VERSION: "1.17.5"
     needs: listimages
     strategy:
       fail-fast: false
@@ -79,5 +80,5 @@ jobs:
         docker pull localhost:5000/${{ matrix.image }}:${{ github.sha }}
         docker tag localhost:5000/${{ matrix.image }}:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.sha }}
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.event.base_ref }}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.event.base_ref }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{  env.OPENMPP_VERSION  }}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ matrix.image }}:${{  env.OPENMPP_VERSION  }}
