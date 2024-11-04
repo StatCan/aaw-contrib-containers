@@ -36,9 +36,9 @@ RUN sed -i "s/[ #]\(.*StrictHostKeyChecking \).*/ \1no/g" /etc/ssh/ssh_config \
     && sed -i "s/#\(Port \).*/\1$port/g" /etc/ssh/sshd_config
 
 # Install kubectl cli to be able to utilize file transfer functionality between containers
-ARG KUBECTL_VERSION=v1.28.2
+ARG KUBECTL_VERSION=v1.31.2
 ARG KUBECTL_URL=https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
-ARG KUBECTL_SHA=c922440b043e5de1afa3c1382f8c663a25f055978cbc6e8423493ec157579ec5
+ARG KUBECTL_SHA=399e9d1995da80b64d2ef3606c1a239018660d8b35209fba3f7b0bc11c631c68
 
 RUN curl -LO "${KUBECTL_URL}" \
     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
