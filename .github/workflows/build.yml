@@ -25,7 +25,7 @@ jobs:
       run: echo "::set-output name=matrix::{\"image\":[$(ls -d */ | sed 's~\(.*\)/$~\"\1\"~g' | paste -sd ',')]}"
   build:
     env: 
-      TRIVY_VERSION: "v0.43.1"
+      TRIVY_VERSION: "v0.57.0"
       HADOLINT_VERSION: "2.12.0"
       TRIVY_DB_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-db,aquasec/trivy-db,ghcr.io/aquasecurity/trivy-db"
       TRIVY_JAVA_DB_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-java-db,aquasec/trivy-java-db,ghcr.io/aquasecurity/trivy-java-db"
