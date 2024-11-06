@@ -36,9 +36,9 @@ RUN sed -i "s/[ #]\(.*StrictHostKeyChecking \).*/ \1no/g" /etc/ssh/ssh_config \
     && sed -i "s/#\(Port \).*/\1$port/g" /etc/ssh/sshd_config
 
 # Install kubectl cli to be able to utilize file transfer functionality between containers
-ARG KUBECTL_VERSION=v1.28.2
+ARG KUBECTL_VERSION=v1.28.11
 ARG KUBECTL_URL=https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
-ARG KUBECTL_SHA=c922440b043e5de1afa3c1382f8c663a25f055978cbc6e8423493ec157579ec5
+ARG KUBECTL_SHA=1dba63e1a5c9520fc516c6e817924d927b9b83b8e08254c8fe2a2edb65da7a9c
 
 RUN curl -LO "${KUBECTL_URL}" \
     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
@@ -51,7 +51,7 @@ ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime && \
 echo "ulimit -S -s 65536" >> etc/bash.bashrc
 
 # Add non-root user
-RUN useradd -m mpiuser
+RUN useradd -s /usr/bin/bash -m mpiuser
 WORKDIR /home/mpiuser
 
 # Configurations for running sshd as non-root.

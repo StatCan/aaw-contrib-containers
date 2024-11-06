@@ -25,8 +25,11 @@ jobs:
       run: echo "::set-output name=matrix::{\"image\":[$(ls -d */ | sed 's~\(.*\)/$~\"\1\"~g' | paste -sd ',')]}"
   build:
     env: 
-      TRIVY_VERSION: "v0.43.1"
+      TRIVY_VERSION: "v0.57.0"
       HADOLINT_VERSION: "2.12.0"
+      TRIVY_DB_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-db,aquasec/trivy-db,ghcr.io/aquasecurity/trivy-db"
+      TRIVY_JAVA_DB_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-java-db,aquasec/trivy-java-db,ghcr.io/aquasecurity/trivy-java-db"
+      TRIVY_DISABLE_VEX_NOTICE: true
     needs: listimages
     strategy:
       fail-fast: false
@@ -51,7 +54,7 @@ jobs:
       run: |
         printf ${{ secrets.CVE_ALLOWLIST }} > .trivyignore
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
-        trivy image localhost:5000/${{ matrix.image }}:${{ github.sha }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL
+        trivy image localhost:5000/${{ matrix.image }}:${{ github.sha }} --exit-code 1 --timeout=20m --scanners vuln --severity CRITICAL
 
     # Run Hadolint
     - name: Run Hadolint

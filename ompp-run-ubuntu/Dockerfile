@@ -68,9 +68,9 @@ RUN GO_VER=1.22.5; \
   rm /tmp/go_setup.tar.gz
 
 # Install kubectl cli to be able to utilize file transfer functionality between containers
-ARG KUBECTL_VERSION=v1.28.2
+ARG KUBECTL_VERSION=v1.28.11
 ARG KUBECTL_URL=https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
-ARG KUBECTL_SHA=c922440b043e5de1afa3c1382f8c663a25f055978cbc6e8423493ec157579ec5
+ARG KUBECTL_SHA=1dba63e1a5c9520fc516c6e817924d927b9b83b8e08254c8fe2a2edb65da7a9c
 
 RUN curl -LO "${KUBECTL_URL}" \
     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
@@ -93,13 +93,14 @@ RUN groupadd -g ${OMPP_GID} ${OMPP_GROUP} && \
     mkdir ${HOME}/work
 
 # Install OpenM++ into user home directory
-ARG OMPP_VERSION=v1.17.4
-ARG OMPP_URL=https://github.com/openmpp/main/releases/download/${OMPP_VERSION}/openmpp_debian-11_20240731.tar.gz
-ARG OMPP_SHA=4ecb8c6b31030cf4ec92030b3e2ada2d5a57b557829d2b98e69d6326931ccac6
+ARG OMPP_VERSION=v1.17.5
+ARG OMPP_DATE=20241021
+ARG OMPP_URL=https://github.com/openmpp/main/releases/download/${OMPP_VERSION}/openmpp_debian-11_${OMPP_DATE}.tar.gz
+ARG OMPP_SHA=79084a009f3bad3c0d81cb12ccc844458d29b70d199352233aad3d94489427c9
 
 RUN curl -LO "${OMPP_URL}" \
-    && echo "${OMPP_SHA} openmpp_debian-11_20240731.tar.gz" | sha256sum -c - \
-    && tar -xf ./openmpp_debian-11_20240731.tar.gz -C ${HOME}
+    && echo "${OMPP_SHA} openmpp_debian-11_${OMPP_DATE}.tar.gz" | sha256sum -c - \
+    && tar -xf ./openmpp_debian-11_${OMPP_DATE}.tar.gz -C ${HOME}
 
 USER $OMPP_USER
 
