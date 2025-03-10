@@ -1,0 +1,5 @@
+k8scc01covidacr.azurecr.io/rstudio
+k8scc01covidacr.azurecr.io/jupyterlab-cpu
+k8scc01covidacr.azurecr.io/jupyterlab-tensorflow
+k8scc01covidacr.azurecr.io/jupyterlab-pytorch
+k8scc01covidacr.azurecr.io/remote-desktop
