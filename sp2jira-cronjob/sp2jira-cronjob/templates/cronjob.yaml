@@ -1,0 +1,116 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: sp2jira-cronjob
+spec:
+  concurrencyPolicy: {{ .Values.job.concurrencyPolicy }}
+  successfulJobsHistoryLimit: {{ .Values.job.successfulJobsHistoryLimit }} 
+  failedJobsHistoryLimit: {{ .Values.job.failedJobsHistoryLimit }} 
+  schedule: "{{ .Values.job.schedule }}" 
+  jobTemplate:
+    spec: # See k8s API JobSpec
+      template: # See k8s API PodTemplateSpec
+        metadata:
+          name: sp2jira-cronjob
+        spec: # See k8s API PodSpec
+          restartPolicy: {{ .Values.job.restartPolicy }}
+          containers:
+            - name: sp2jira-cronjob
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              env:
+              - name: JIRA_SERVER
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: jiraServer 
+              - name: JIRA_TOKEN
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key:  jiraToken
+              - name: JIRA_PROJECT
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: jiraProject
+              - name: JIRA_ASSIGNEE
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: jiraAssignee
+              - name: JIRA_WATCHERS
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: jiraWatchers
+              - name: JIRA_ISSUE_TYPE
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: jiraIssueType
+              - name: JIRA_ISSUE_SUMMARY
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: jiraIssueSummary
+              - name: JIRA_ISSUE_DESC_NO_RESPONSE
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: jiraIssueDescNoResponse
+              - name: SHAREPOINT_CLIENT_ID
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: sharepointClientId
+              - name: SHAREPOINT_CLIENT_SECRET
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: sharepointClientSecret
+              - name: SHAREPOINT_SITE_URL
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: sharepointSiteUrl
+              - name: SHAREPOINT_FILE_URL
+                valueFrom : sharepointFileUrl
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: sharepointFileUrl
+              - name: SHAREPOINT_LIST_TITLE
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: sharepointListTitle
+              - name: SHAREPOINT_SHEET_NAME
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: sharepointSheetName
+              - name: SHAREPOINT_ID_COLUMN
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: sharepointIdColumn
+              - name: SHAREPOINT_FNAME_COLUMN
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: sharepointFnameColumn
+              - name: SHAREPOINT_LNAME_COLUMN
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: sharepointLnameColumn
+              - name: SHAREPOINT_LIST_COLUMN
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: sharepointListColumn
+              - name: SHAREPOINT_LIST_MAX_RETURN
+                valueFrom : 
+                  secretKeyRef:
+                    name: {{.Values.secretName}}
+                    key: sharepointListMaxReturn

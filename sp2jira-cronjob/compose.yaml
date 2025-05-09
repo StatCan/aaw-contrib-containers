@@ -1,0 +1,35 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+services:
+  server:
+    build:
+      context: .
+    ports:
+      - 8000:8000
+    environment:
+      - JIRA_SERVER
+      - JIRA_TOKEN
+      - JIRA_PROJECT
+      - JIRA_ASSIGNEE
+      - JIRA_WATCHERS
+      - JIRA_ISSUE_TYPE
+      - JIRA_ISSUE_SUMMARY
+      - JIRA_ISSUE_DESC_NO_RESPONSE
+      - SHAREPOINT_CLIENT_ID
+      - SHAREPOINT_CLIENT_SECRET
+      - SHAREPOINT_SITE_URL
+      - SHAREPOINT_FILE_URL
+      - SHAREPOINT_LIST_TITLE
+      - SHAREPOINT_SHEET_NAME
+      - SHAREPOINT_ID_COLUMN
+      - SHAREPOINT_FNAME_COLUMN
+      - SHAREPOINT_LNAME_COLUMN
+      - SHAREPOINT_LIST_COLUMN
+      - SHAREPOINT_LIST_MAX_RETURN
