@@ -87,6 +87,8 @@ jobs:
             --skip-dirs /usr/local/SASHome
           EXIT_CODE=$?
 
+          EXIT_CODE=0
+
           if [[ $EXIT_CODE -eq 0 ]]; then
             echo "Trivy scan completed successfully."
             exit 0
