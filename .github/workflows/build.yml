@@ -70,7 +70,7 @@ jobs:
             localhost:5000/${{ matrix.image }}:${{ github.sha }} \
             --exit-code 10 --timeout=20m --scanners vuln --severity CRITICAL \
             --skip-dirs /usr/local/SASHome
-          EXIT_CODE=0
+          EXIT_CODE=$?
 
           if [[ $EXIT_CODE -eq 0 ]]; then
             echo "Trivy scan completed successfully."
